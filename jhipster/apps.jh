@@ -80,7 +80,6 @@ microservice Blog, Post, Tag with blog
 deployment {
   deploymentType docker-compose
   appsFolders [gateway, blog, store]
-  dockerRepositoryName "mraible"
-  monitoring elk
+  dockerRepositoryName "jmicro"
   consoleOptions [zipkin]
 }

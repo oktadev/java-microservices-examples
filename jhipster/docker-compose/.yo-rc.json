@@ -2,7 +2,7 @@
   "generator-jhipster": {
     "deploymentType": "docker-compose",
     "gatewayType": "zuul",
-    "monitoring": "elk",
+    "monitoring": "no",
     "directoryPath": "../",
     "appsFolders": [
       "gateway",
@@ -14,7 +14,7 @@
       "zipkin"
     ],
     "serviceDiscoveryType": "eureka",
-    "dockerRepositoryName": "mraible",
+    "dockerRepositoryName": "jmicro",
     "dockerPushCommand": "docker push"
   }
 }
