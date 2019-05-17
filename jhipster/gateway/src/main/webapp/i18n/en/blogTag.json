@@ -1,0 +1,26 @@
+{
+  "gatewayApp": {
+    "blogTag": {
+      "home": {
+        "title": "Tags",
+        "createLabel": "Create a new Tag",
+        "createOrEditLabel": "Create or edit a Tag"
+      },
+      "delete": {
+        "question": "Are you sure you want to delete Tag {{ id }}?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "name": "Name",
+      "post": "Post"
+    }
+  },
+  "blogApp": {
+    "blogTag": {
+      "created": "A new Tag is created with identifier {{ param }}",
+      "updated": "A Tag is updated with identifier {{ param }}",
+      "deleted": "A Tag is deleted with identifier {{ param }}"
+    }
+  }
+}
