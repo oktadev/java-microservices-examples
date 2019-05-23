@@ -5,7 +5,10 @@ This repository contains examples of how to build a microservices architecture w
 
 This repository has two examples in it. One is a bare-bones microservices architecture with Spring Boot, Spring Cloud, Eureka Server, and Zuul. The second is one that's built with JHipster and configured centrally with Spring Cloud Config.
 
-Please read [Java Microservices with Spring Boot and Spring Cloud](https://developer.okta.com/blog/2019/05/22/java-microservices-spring-boot-spring-cloud) for an overview of the first example.
+We think you'll enjoy them both!
+
+* See [Java Microservices with Spring Boot and Spring Cloud](https://developer.okta.com/blog/2019/05/22/java-microservices-spring-boot-spring-cloud) for an overview of the first example.
+* Read [Java Microservices with Spring Cloud Config and JHipster](https://developer.okta.com/blog/2019/05/23/java-microservices-spring-cloud-config) to learn about microservices with JHipster.
 
 **Prerequisites:** [Java 11](https://sdkman.io/sdks#java).
 
