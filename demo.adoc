@@ -1,0 +1,48 @@
+:experimental:
+// Define unicode for Apple Command key.
+:commandkey: &#8984;
+
+= Java Microservices with Spring Boot and Spring Cloud
+
+The brackets at the end of each step indicate the alias's or IntelliJ Live Templates to use. You can find the template definitions at https://github.com/mraible/idea-live-templates[mraible/idea-live-templates].
+
+== Create Eureka Server, Car Service, and API Gateway
+
+. Create a Eureka Server
+
+  http https://start.spring.io/starter.zip javaVersion==11 \
+    artifactId==discovery-service name==eureka-service \
+    dependencies==cloud-eureka-server baseDir==discovery-service | tar -xzvf -
+
+. Create a Car Service
+
+  http https://start.spring.io/starter.zip \
+    artifactId==car-service name==car-service baseDir==car-service \
+    dependencies==actuator,cloud-eureka,data-jpa,h2,data-rest,web,devtools,lombok | tar -xzvf -
+
+. Create an API Gateway
+
+  http https://start.spring.io/starter.zip \
+    artifactId==api-gateway name==api-gateway baseDir==api-gateway \
+    dependencies==cloud-eureka,cloud-feign,data-rest,web,cloud-hystrix,lombok | tar -xzvf -
+
+. Install Java 11 with SDKMAN! https://sdkman.io/
+
+  sdk list java
+  sdk install java 11.0.2-open
+  sdk default java 11.0.2-open
+
+. Add JAXB to `discovery-service` so it works with Java 11
+
+  <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+  </dependency>
+
+... to be continued ...
+
+== Learn More!
+
+. GitHub repo: https://github.com/oktadeveloper/java-microservices-examples
+
+. Blog post: https://developer.okta.com/blog/2019/05/22/java-microservices-spring-boot-spring-cloud
