@@ -40,7 +40,7 @@ public class CarServiceApplicationTests {
                 .bindToApplicationContext(this.context)
                 .apply(springSecurity())
                 .configureClient()
-                //.filter(basicAuthentication())
+                .filter(basicAuthentication())
                 .build();
     }
 
