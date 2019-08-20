@@ -55,23 +55,26 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
 
   spring.application.name=api-gateway
 
-. Create an API with Spring Boot and Spring Data [//todo]
+. Create an API with Spring Boot and Spring Data [`boot-entity-lombok`, `boot-repo`, `boot-data`]
+
+. Show Lombok plugin is installed in IntelliJ
 
 . Configure gateway to enable resilient server-to-server communication
 
   @EnableFeignClients
   @EnableCircuitBreaker
-  @EnableZuulProxy
 
-  // feign client
-  // cool car controller
-  // hystrix
+. Create a `Car` class with `@Data`
 
-. Start all servers, view Eureka server, and /cool-cars endpoint
+. Create a feign client and cool car controller [`feign-client`, `cool-car-adapter`]
+
+. Add `@HystrixCommand` for failover [`hystrix-fallback`]
+
+. Start all servers, view Eureka server, and https://localhost:8080/cool-cars endpoint
 
 == Secure Java Microservices with OAuth 2.0 and OIDC
 
-. Add Okta Spring Boot starter to `api-gateway` and `car-service`
+. Add Okta Spring Boot starter to `api-gateway` and `car-service` [`okta-maven-boot`]
 
   <dependency>
     <groupId>com.okta.spring</groupId>
@@ -87,41 +90,34 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
   okta.oauth2.client-id=$clientId
   okta.oauth2.client-secret=$clientSecret
 
-. Enable OIDC Login and OAuth Resource Server in `ApiGatewayApplication.java`
+. Create a `SecurityConfiguration` class, and enable OAuth Login and a Resource Server [`ss-resource-config`]
 
-  @Configuration
-  static class OktaOAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+  @EnableWebSecurity
+  public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-      @Override
-      protected void configure(HttpSecurity http) throws Exception {
-          // @formatter:off
-          http
-              .authorizeRequests().anyRequest().authenticated()
-                  .and()
-              .oauth2Login()
-                  .and()
-              .oauth2ResourceServer().jwt();
-          // @formatter:on
-      }
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+      // @formatter:off
+      http
+          .authorizeRequests().anyRequest().authenticated()
+              .and()
+          .oauth2Login()
+              .and()
+          .oauth2ResourceServer().jwt();
+      // @formatter:on
   }
+}
 
-. Enable Resource Server in `CarServiceApplication.java`
+. Enable Resource Server in the `car-service` application [`ss-resource-config`]
 
-  @Configuration
-  static class OktaOAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+. Create `UserFeignClientInterceptor` to add `Authorization` header in `api-gateway` [`feign-interceptor`]
 
-      @Override
-      protected void configure(HttpSecurity http) throws Exception {
-          // @formatter:off
-          http
-              .authorizeRequests().anyRequest().authenticated()
-                  .and()
-              .oauth2ResourceServer().jwt();
-          // @formatter:on
-      }
+. Register interceptor as a bean [`feign-bean`]
+
+  @Bean
+  public RequestInterceptor getUserFeignClientInterceptor(OAuth2AuthorizedClientService clientService) {
+      return new UserFeignClientInterceptor(clientService);
   }
-
-. Create `UserFeignClientInterceptor` to add `Authorization` header in `api-gateway` and register as a bean
 
 . Make Feign Spring Security-aware
 
@@ -139,15 +135,20 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
     <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
   </dependency>
 
-. Create an `AuthorizationHeaderFilter` to pass the access token to proxied routes [//todo]
+. Create an `AuthorizationHeaderFilter` to pass the access token to proxied routes [`zuul-auth-header`]
 
-. Register `AuthorizationHeaderFilter` filter as a bean [//todo]
+. Register `AuthorizationHeaderFilter` filter as a bean [`zuul-bean`]
 
-. Add Zuul routes for `/cars` and `/home` [//todo]
+  @Bean
+  public AuthorizationHeaderFilter authHeaderFilter(OAuth2AuthorizedClientService clientService) {
+      return new AuthorizationHeaderFilter(clientService);
+  }
 
-. Add `HomeController` to the `car-service`
+. Add Zuul routes for `/cars` and `/home` [`zuul-routes`]
 
-. Restart and confirm your Zuul routes work
+. Add `HomeController` to the `car-service` [`zuul-home`]
+
+. Restart and confirm `https://localhost:8080/cars` and `http://localhost:8080/home` routes work
 
 . Fin! 🏁
 
