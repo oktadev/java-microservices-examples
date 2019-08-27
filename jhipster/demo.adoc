@@ -8,7 +8,7 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
 
 == Create Microservices with JHipster
 
-. Use JDL Studio to create a microservices architecture using JDL (gateway, blog, and store)
+. Use https://start.jhipster.tech[JDL Studio] to create a microservices architecture using JDL (gateway, blog, and store)
 
 .`apps.jh`
 [%collapsible]
