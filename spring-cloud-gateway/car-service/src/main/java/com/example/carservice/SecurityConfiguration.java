@@ -18,13 +18,10 @@ public class SecurityConfiguration {
             .authorizeExchange()
                 .anyExchange().authenticated()
                 .and()
-            .oauth2Login()
-                .and()
             .oauth2ResourceServer()
                 .jwt();
 
-        // Uncomment to prevent redirect and only act as a resource server
-        // Okta.configureResourceServer401ResponseBody(http);
+        Okta.configureResourceServer401ResponseBody(http);
 
         return http.build();
         // @formatter:on

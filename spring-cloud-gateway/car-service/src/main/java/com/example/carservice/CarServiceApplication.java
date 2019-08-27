@@ -34,9 +34,8 @@ public class CarServiceApplication {
 
     @Bean
     ApplicationRunner init(CarRepository repository) {
-
-        // Names from https://www.vw.com/electric-concepts/
-        // Dates from https://www.motor1.com/features/346407/volkswagen-id-price-on-sale/
+        // Electric VWs from https://www.vw.com/electric-concepts/
+        // Release dates from https://www.motor1.com/features/346407/volkswagen-id-price-on-sale/
         Car ID = new Car(UUID.randomUUID(), "ID.", LocalDate.of(2019, Month.DECEMBER, 1));
         Car ID_CROZZ = new Car(UUID.randomUUID(), "ID. CROZZ", LocalDate.of(2021, Month.MAY, 1));
         Car ID_VIZZION = new Car(UUID.randomUUID(), "ID. VIZZION", LocalDate.of(2021, Month.DECEMBER, 1));
