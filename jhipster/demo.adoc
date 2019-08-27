@@ -102,7 +102,7 @@ deployment {
 }
 ----
 ====
-
+[start=2]
 . Run `jhipster import-jdl apps.jh`
 
 . Create an aggregator `pom.xml` in the root directory
