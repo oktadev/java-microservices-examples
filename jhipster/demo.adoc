@@ -1,0 +1,173 @@
+:experimental:
+// Define unicode for Apple Command key.
+:commandkey: &#8984;
+
+= Java Microservices with Spring Cloud Config and JHipster
+
+The brackets at the end of each step indicate the alias's or IntelliJ Live Templates to use. You can find the template definitions at https://github.com/mraible/idea-live-templates[mraible/idea-live-templates].
+
+== Create Microservices with JHipster
+
+. Use JDL Studio to create a microservices architecture using JDL (gateway, blog, and store)
+
+.`apps.jh`
+[%collapsible]
+====
+[source]
+----
+application {
+  config {
+    baseName gateway,
+    packageName com.okta.developer.gateway,
+    applicationType gateway,
+    authenticationType oauth2,
+    prodDatabaseType postgresql,
+    serviceDiscoveryType eureka,
+    testFrameworks [protractor]
+  }
+  entities Blog, Post, Tag, Product
+}
+
+application {
+  config {
+    baseName blog,
+    packageName com.okta.developer.blog,
+    applicationType microservice,
+    authenticationType oauth2,
+    prodDatabaseType postgresql,
+    serverPort 8081,
+    serviceDiscoveryType eureka
+  }
+  entities Blog, Post, Tag
+}
+
+application {
+  config {
+    baseName store,
+    packageName com.okta.developer.store,
+    applicationType microservice,
+    authenticationType oauth2,
+    databaseType mongodb,
+    devDatabaseType mongodb,
+    prodDatabaseType mongodb,
+    enableHibernateCache false,
+    serverPort 8082,
+    serviceDiscoveryType eureka
+  }
+  entities Product
+}
+
+entity Blog {
+  name String required minlength(3),
+  handle String required minlength(2)
+}
+
+entity Post {
+  title String required,
+  content TextBlob required,
+  date Instant required
+}
+
+entity Tag {
+  name String required minlength(2)
+}
+
+entity Product {
+  title String required,
+  price BigDecimal required min(0),
+  image ImageBlob
+}
+
+relationship ManyToOne {
+  Blog{user(login)} to User,
+  Post{blog(name)} to Blog
+}
+
+relationship ManyToMany {
+  Post{tag(name)} to Tag{post}
+}
+
+paginate Post, Tag with infinite-scroll
+paginate Product with pagination
+
+microservice Product with store
+microservice Blog, Post, Tag with blog
+
+// will be created under 'docker-compose' folder
+deployment {
+  deploymentType docker-compose
+  appsFolders [gateway, blog, store]
+  dockerRepositoryName "jmicro"
+  consoleOptions [zipkin]
+}
+----
+====
+
+. Run `jhipster import-jdl apps.jh`
+
+. Create an aggregator `pom.xml` in the root directory
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>com.okta.developer</groupId>
+      <artifactId>jhipster-parent</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <packaging>pom</packaging>
+      <name>jhipster-parent</name>
+      <modules>
+          <module>gateway</module>
+          <module>blog</module>
+          <module>store</module>
+      </modules>
+  </project>
+
+. Create Docker images for Spring Boot apps
+
+  mvn -Pprod verify com.google.cloud.tools:jib-maven-plugin:dockerBuild
+
+. Run with Docker Compose
+
+  cd docker-compose
+  docker-compose up -d
+
+. Mention you need a `hosts` entry for Keycloak
+
+  127.0.0.1  keycloak
+
+. Show JHipster Registry at `http://localhost:8761` and gateway at `http://localhost:8080`
+
+== Configure JHipster Microservices to use Okta for Identity
+
+. Create a web app on Okta, use `http://localhost:8080/login/oauth2/code/okta` for redirect URI
+
+. Add `http://localhost:8080` as a logout redirect URI
+
+. Add your Okta settings in Spring Cloud Config's `docker-compose/central-server-config/application.yml`
+
+  spring:
+    security:
+      oauth2:
+        client:
+          provider:
+            oidc:
+              issuer-uri: https://okta.okta.com/oauth2/default
+          registration:
+            oidc:
+              client-id: {yourClientId}
+              client-secret: {yourClientSecret}
+
+. Restart all containers using `docker-compose restart`
+
+. Prepare Okta for JHipster: `ROLE_ADMIN` group, groups in ID token, and JHipster Registry's redirect URIs
+
+. Demo JHipster Registry and gateway log in with Okta
+
+. Fin! 🏁
+
+== Learn More!
+
+. GitHub repo: https://github.com/oktadeveloper/java-microservices-examples
+
+. Blog post: https://developer.okta.com/blog/2019/05/23/java-microservices-spring-cloud-config
