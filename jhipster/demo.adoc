@@ -152,7 +152,7 @@ deployment {
         client:
           provider:
             oidc:
-              issuer-uri: https://okta.okta.com/oauth2/default
+              issuer-uri: https://{yourOktaDomain}/oauth2/default
           registration:
             oidc:
               client-id: {yourClientId}
@@ -164,7 +164,7 @@ deployment {
 
 . Demo JHipster Registry and gateway log in with Okta
 
-. Fin! 🏁
+. Finito! 🤓
 
 == Learn More!
 
