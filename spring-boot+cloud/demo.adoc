@@ -148,7 +148,7 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
 
 . Add `HomeController` to the `car-service` [`zuul-home`]
 
-. Restart and confirm `https://localhost:8080/cars` and `http://localhost:8080/home` routes work
+. Restart and confirm `http://localhost:8080/cars` and `http://localhost:8080/home` routes work
 
 . Fin! 🏁
 
