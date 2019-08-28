@@ -9,7 +9,7 @@ We think you'll enjoy them both!
 
 * See [Java Microservices with Spring Boot and Spring Cloud](https://developer.okta.com/blog/2019/05/22/java-microservices-spring-boot-spring-cloud) for an overview of the first example.
 * Read [Java Microservices with Spring Cloud Config and JHipster](https://developer.okta.com/blog/2019/05/23/java-microservices-spring-cloud-config) to learn about microservices with JHipster.
-* Refer to [Secure Reactive Microservices with Spring Cloud Gateway](https://developer.okta.com/blog/2019/09/28/reactive-microservices-spring-cloud-gateway) to learn about Spring Cloud Gateway and reactive microservices.
+* Refer to [Secure Reactive Microservices with Spring Cloud Gateway](https://developer.okta.com/blog/2019/08/28/reactive-microservices-spring-cloud-gateway) to learn about Spring Cloud Gateway and reactive microservices.
 
 **Prerequisites:** [Java 11](https://sdkman.io/sdks#java) and an internet connection.
 
@@ -178,6 +178,7 @@ These examples uses the following open source libraries:
 * [Okta Spring Boot Starter](https://github.com/okta/okta-spring-boot) 
 * [Spring Boot](https://spring.io/projects/spring-boot)
 * [Spring Cloud](https://spring.io/projects/spring-cloud)
+* [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway)
 * [Spring Security](https://spring.io/projects/spring-security)
 * [JHipster](https://www.jhipster.tech)
 * [OpenJDK](https://openjdk.java.net/)
