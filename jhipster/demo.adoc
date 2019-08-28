@@ -140,7 +140,7 @@ deployment {
 
 == Configure JHipster Microservices to use Okta for Identity
 
-. Create a web app on Okta, use `http://localhost:8080/login/oauth2/code/okta` for redirect URI
+. Create a web app on Okta, use `http://localhost:8080/login/oauth2/code/oidc` for redirect URI
 
 . Add `http://localhost:8080` as a logout redirect URI
 
