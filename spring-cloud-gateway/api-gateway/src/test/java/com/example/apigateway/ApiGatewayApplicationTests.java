@@ -21,34 +21,33 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = {"spring.cloud.discovery.enabled = false"})
+        properties = {"spring.cloud.discovery.enabled = false"})
 public class ApiGatewayApplicationTests {
 
-	@Autowired
-	WebTestClient webTestClient;
+    @Autowired
+    WebTestClient webTestClient;
 
-	@MockBean
-	ReactiveJwtDecoder jwtDecoder;
+    @MockBean
+    ReactiveJwtDecoder jwtDecoder;
 
-	@Test
-	public void testCorsConfiguration() {
-		Jwt jwt = jwt();
-		when(this.jwtDecoder.decode(anyString())).thenReturn(Mono.just(jwt));
-		WebTestClient.ResponseSpec response = webTestClient.put()
-				.uri("/")
-				.headers(addJwt(jwt))
-				.header("Origin", "http://example.com")
-				.exchange();
+    @Test
+    public void testCorsConfiguration() {
+        Jwt jwt = jwt();
+        when(this.jwtDecoder.decode(anyString())).thenReturn(Mono.just(jwt));
+        WebTestClient.ResponseSpec response = webTestClient.put().uri("/")
+                .headers(addJwt(jwt))
+                .header("Origin", "http://example.com")
+                .exchange();
 
-		response.expectHeader().valueEquals("Access-Control-Allow-Origin", "*");
-	}
+        response.expectHeader().valueEquals("Access-Control-Allow-Origin", "*");
+    }
 
-	private Jwt jwt() {
-		return new Jwt("token", null, null,
-				Map.of("alg", "none"), Map.of("sub", "dave"));
-	}
+    private Jwt jwt() {
+        return new Jwt("token", null, null,
+                Map.of("alg", "none"), Map.of("sub", "dave"));
+    }
 
-	private Consumer<HttpHeaders> addJwt(Jwt jwt) {
-		return headers -> headers.setBearerAuth(jwt.getTokenValue());
-	}
+    private Consumer<HttpHeaders> addJwt(Jwt jwt) {
+        return headers -> headers.setBearerAuth(jwt.getTokenValue());
+    }
 }

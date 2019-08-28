@@ -31,7 +31,7 @@ public class ApiGatewayApplication {
                 .route("car-service", r -> r.path("/cars")
                         .filters(f -> f.filter(filterFactory.apply()))
                         // .filters(f -> f.hystrix(c -> c.setName("carsFallback")
-                		// .setFallbackUri("forward:/cars-fallback")))
+                        // .setFallbackUri("forward:/cars-fallback")))
                         .uri("lb://car-service"))
                 .build();
     }
