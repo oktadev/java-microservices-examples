@@ -136,8 +136,7 @@ If you already have an Okta account, see the **Create a Web Application in Okta*
 
 To use it, add the following plugin repository to the gateway project's `pom.xml`:
 
-[source,xml]
-----
+```xml
 <pluginRepositories>
     <pluginRepository>
         <id>ossrh</id>
@@ -146,7 +145,7 @@ To use it, add the following plugin repository to the gateway project's `pom.xml
         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </pluginRepository>
 </pluginRepositories>
-----
+```
 
 Then run `./mvnw com.okta:okta-maven-plugin:setup` to create an account and configure the gateway to work with Okta.
 
