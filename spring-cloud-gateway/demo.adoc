@@ -74,7 +74,7 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
 
 . Add a `FaveCarsController` [`webflux-controller-fave`]
 
-. Show how `http://localhost:8080/hyfave-cars` only returns an ID Buzz
+. Show how `http://localhost:8080/fave-cars` only returns an ID Buzz
 
 == Add Failover with Hystrix
 
@@ -84,7 +84,7 @@ Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated
 
 . Create a `CarsFallback` controller [`hystrix-fallback`]
 
-. Restart your gateway and confirm http://localhost:8080/cars works, then shutdown car service to show fallback
+. Restart your gateway and confirm `http://localhost:8080/cars` works, then shutdown car service to show fallback
 
 == Secure Java Microservices with OAuth 2.0 and OIDC
 
