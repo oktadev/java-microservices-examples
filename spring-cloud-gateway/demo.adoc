@@ -27,14 +27,7 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
   sdk install java 11.0.2-open
   sdk default java 11.0.2-open
 
-. Add JAXB to `discovery-service` so it works with Java 11
-
-  <dependency>
-      <groupId>org.glassfish.jaxb</groupId>
-      <artifactId>jaxb-runtime</artifactId>
-  </dependency>
-
-. Start Eureka Server with `./mvn spring-boot:run`
+. Start Eureka Server with `./mvnw spring-boot:run`
 
 . Create an API Gateway with Spring Cloud Gateway
 
@@ -48,14 +41,14 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
   name==car-service baseDir==car-service \
   dependencies==actuator,cloud-eureka,webflux,data-mongodb-reactive,flapdoodle-mongo,lombok | tar -xzvf -
 
-. Show Lombok plugin is installed in IntelliJ
-
 . Add the application name and port to the `car-service` project's `application.properties`
 
   spring.application.name=car-service
   server.port=8081
 
 . Add Eureka registration, sample data initialization, and a reactive REST API to `CarServiceApplication.java` [`webflux-entity`, `webflux-repo`, `webflux-data-vw`, `webflux-controller-full`]
+
+. Show Lombok plugin is installed in IntelliJ
 
 . Run MongoDB or make `flapdoodle` a `compile` dependency
 
@@ -81,7 +74,7 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
 
 . Add a `FaveCarsController` [`webflux-controller-fave`]
 
-. Show how `http://localhost:8080/fave-cars` only returns an ID Buzz
+. Show how `http://localhost:8080/hyfave-cars` only returns an ID Buzz
 
 == Add Failover with Hystrix
 
@@ -89,15 +82,15 @@ Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated
 
 . Add a filter to your `car-service` route [`hystrix-filter`]
 
-. Create a `CarsFallback` controller [`fallback-controller`]
+. Create a `CarsFallback` controller [`hystrix-fallback`]
 
-. Restart your gateway and confirm http://localhost:8080/cars works, then shutdown car-service to show fallback
+. Restart your gateway and confirm http://localhost:8080/cars works, then shutdown car service to show fallback
 
 == Secure Java Microservices with OAuth 2.0 and OIDC
 
 . Run `./mvnw com.okta:okta-maven-plugin:setup` in the gateway project to create an Okta account and an OIDC app
 
-. Add the Okta Spring Boot starter and `spring-cloud-security` to the gateway's `pom.xml`
+. Add the Okta Spring Boot starter and `spring-cloud-security` to the gateway's `pom.xml` [`okta-maven-boot`]
 
 . Verify `http://localhost:8080/fave-cars` requires login
 
@@ -105,7 +98,7 @@ Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated
 
 . Add `SecurityConfiguration` class [`ss-config`]
 
-. Add a `CorsWebFilter` bean for SPAs [`webflux-cors`]
+. Add a `CorsWebFilter` bean for SPAs [`webflux-cors-filter`]
 
 . Test your gateway and confirm CORS is working [`webflux-cors-test`]
 
@@ -115,17 +108,17 @@ Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated
 
 . Copy the `okta.*` properties from the gateway's `application.properties` to the car service
 
-. Create a `SecurityConfiguration` to make the app an OAuth 2.0 resource server
+. Create a `SecurityConfiguration` to make the app an OAuth 2.0 resource server [`ss-resource-webflux`]
 
-. Restart car service and show `http :8081/cars` returns a 401
+. Restart car servictokene and show `http :8081/cars` returns a 401
 
 . Modify `CarServiceApplicationTests.java` to add JWT access tokens to each request [`webflux-controller-test-jwt`]
 
-. In `ApiGatewayApplication.java`, add a filter that applies the `TokenRelayGatewayFilterFactory` from Spring Cloud Security [`router-locator-tokenrelay`]
+. In `ApiGatewayApplication.java`, add a filter that applies the `TokenRelayGatewayFilterFactory` from Spring Cloud Security [`router-locator-token`]
 
 . Restart the API Gateway and confirm `http://localhost:8080/cars` works
 
-. Fin! 🏁
+. Congrats! 🏁
 
 == Learn More!
 
