@@ -1,0 +1,134 @@
+:experimental:
+// Define unicode for Apple Command key.
+:commandkey: &#8984;
+
+= Secure Reactive Microservices with Spring Cloud Gateway
+
+The brackets at the end of each step indicate the alias's or IntelliJ Live Templates to use. You can find the template definitions at https://github.com/mraible/idea-live-templates[mraible/idea-live-templates].
+
+== Create Eureka Server, Car Service, and API Gateway
+
+. Create a directory to hold all projects, e.g., `spring-cloud-gateway`
+
+. Create a Eureka Server
+
+  http https://start.spring.io/starter.zip javaVersion==11 artifactId==discovery-service \
+  name==eureka-service baseDir==discovery-service \
+  dependencies==cloud-eureka-server | tar -xzvf -
+
+. Add `@EnableEurekaServer` and properties to set port and turn off discovery
+
+  server.port=8761
+  eureka.client.register-with-eureka=false
+
+. Install Java 11 with SDKMAN! https://sdkman.io/
+
+  sdk list java
+  sdk install java 11.0.2-open
+  sdk default java 11.0.2-open
+
+. Add JAXB to `discovery-service` so it works with Java 11
+
+  <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+  </dependency>
+
+. Start Eureka Server with `./mvn spring-boot:run`
+
+. Create an API Gateway with Spring Cloud Gateway
+
+  http https://start.spring.io/starter.zip javaVersion==11 artifactId==api-gateway \
+  name==api-gateway baseDir==api-gateway \
+  dependencies==actuator,cloud-eureka,cloud-feign,cloud-gateway,cloud-hystrix,webflux,lombok | tar -xzvf -
+
+. Create a Reactive Microservice with Spring WebFlux
+
+  http https://start.spring.io/starter.zip javaVersion==11 artifactId==car-service \
+  name==car-service baseDir==car-service \
+  dependencies==actuator,cloud-eureka,webflux,data-mongodb-reactive,flapdoodle-mongo,lombok | tar -xzvf -
+
+. Show Lombok plugin is installed in IntelliJ
+
+. Add the application name and port to the `car-service` project's `application.properties`
+
+  spring.application.name=car-service
+  server.port=8081
+
+. Add Eureka registration, sample data initialization, and a reactive REST API to `CarServiceApplication.java` [`webflux-entity`, `webflux-repo`, `webflux-data-vw`, `webflux-controller-full`]
+
+. Run MongoDB or make `flapdoodle` a `compile` dependency
+
+. Create tests to verify REST endpoints with `WebTestClient` [`webflux-controller-test`]
+
+. Test with `./mvnw test`
+
+. Create an aggregator `pom.xml` to open all projects at once [`aggregator-pom`]
+
+. In `ApiGatewayApplication`, add `@EnableEurekaClient` and specify name in `application.properties`
+
+  spring.application.name=gateway
+
+. Create a `RouteLocator` bean in `ApiGatewayApplication` [`route-locator`]
+
+. Start all three apps and show `http :8080/cars` works
+
+== Add a Favorite Cars Endpoint
+
+. Add a load-balanced `WebClient.Builder` bean [`webclient-builder`]
+
+. Add a `Car` POJO with `name` and `releaseDate`
+
+. Add a `FaveCarsController` [`webflux-controller-fave`]
+
+. Show how `http://localhost:8080/fave-cars` only returns an ID Buzz
+
+== Add Failover with Hystrix
+
+Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated direct support for Hystrix in favor of Spring Cloud Circuit Breaker. Unfortunately, this library hasn't had a GA release yet.
+
+. Add a filter to your `car-service` route [`hystrix-filter`]
+
+. Create a `CarsFallback` controller [`fallback-controller`]
+
+. Restart your gateway and confirm http://localhost:8080/cars works, then shutdown car-service to show fallback
+
+== Secure Java Microservices with OAuth 2.0 and OIDC
+
+. Run `./mvnw com.okta:okta-maven-plugin:setup` in the gateway project to create an Okta account and an OIDC app
+
+. Add the Okta Spring Boot starter and `spring-cloud-security` to the gateway's `pom.xml`
+
+. Verify `http://localhost:8080/fave-cars` requires login
+
+=== Make Your Gateway an OAuth 2.0 Resource Server
+
+. Add `SecurityConfiguration` class [`ss-config`]
+
+. Add a `CorsWebFilter` bean for SPAs [`webflux-cors`]
+
+. Test your gateway and confirm CORS is working [`webflux-cors-test`]
+
+=== Secure Gateway to Microservice Communication
+
+. Add the Okta Spring Boot starter to `car-service/pom.xml`
+
+. Copy the `okta.*` properties from the gateway's `application.properties` to the car service
+
+. Create a `SecurityConfiguration` to make the app an OAuth 2.0 resource server
+
+. Restart car service and show `http :8081/cars` returns a 401
+
+. Modify `CarServiceApplicationTests.java` to add JWT access tokens to each request [`webflux-controller-test-jwt`]
+
+. In `ApiGatewayApplication.java`, add a filter that applies the `TokenRelayGatewayFilterFactory` from Spring Cloud Security [`router-locator-tokenrelay`]
+
+. Restart the API Gateway and confirm `http://localhost:8080/cars` works
+
+. Fin! 🏁
+
+== Learn More!
+
+. GitHub repo: https://github.com/oktadeveloper/java-microservices-examples
+
+. Blog post: https://developer.okta.com/blog/2019/08/28/reactive-microservices-spring-cloud-gateway
