@@ -82,7 +82,7 @@ Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated
 
 . Add a filter to your `car-service` route [`hystrix-filter`]
 
-. Create a `CarsFallback` controller [`hystrix-fallback`]
+. Create a `CarsFallback` controller [`hystrix-controller`]
 
 . Restart your gateway and confirm `http://localhost:8080/cars` works, then shutdown car service to show fallback
 
@@ -110,7 +110,7 @@ Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated
 
 . Create a `SecurityConfiguration` to make the app an OAuth 2.0 resource server [`ss-resource-webflux`]
 
-. Restart car servictokene and show `http :8081/cars` returns a 401
+. Restart car service and show `http :8081/cars` returns a 401
 
 . Modify `CarServiceApplicationTests.java` to add JWT access tokens to each request [`webflux-controller-test-jwt`]
 
