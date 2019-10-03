@@ -114,7 +114,7 @@ Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated
 
 . Modify `CarServiceApplicationTests.java` to add JWT access tokens to each request [`webflux-controller-test-jwt`]
 
-. In `ApiGatewayApplication.java`, add a filter that applies the `TokenRelayGatewayFilterFactory` from Spring Cloud Security [`router-locator-token`]
+. In `ApiGatewayApplication.java`, add a filter that applies the `TokenRelayGatewayFilterFactory` from Spring Cloud Security [`route-locator-token`]
 
 . Restart the API Gateway and confirm `http://localhost:8080/cars` works
 
