@@ -134,20 +134,7 @@ The `api-gateway` and `car-service` projects are already pre-configured to be lo
 
 If you already have an Okta account, see the **Create a Web Application in Okta** section below. Otherwise, we created a Maven plugin that configures a free Okta developer account + an OIDC app (in under a minute!).
 
-To use it, add the following plugin repository to the gateway project's `pom.xml`:
-
-```xml
-<pluginRepositories>
-    <pluginRepository>
-        <id>ossrh</id>
-        <releases><enabled>false</enabled></releases>
-        <snapshots><enabled>true</enabled></snapshots>
-        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </pluginRepository>
-</pluginRepositories>
-```
-
-Then run `./mvnw com.okta:okta-maven-plugin:setup` to create an account and configure the gateway to work with Okta.
+To use it, run `./mvnw com.okta:okta-maven-plugin:setup` to create an account and configure the gateway to work with Okta.
 
 Copy the `okta.*` properties from the gateway's `src/main/resources/application.properties` to the same file in the `car-service` project.
 
