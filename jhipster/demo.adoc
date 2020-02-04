@@ -4,7 +4,7 @@
 
 = Java Microservices with Spring Cloud Config and JHipster
 
-If you'd like to see a video version of this demo, you can [watch it on YouTube](https://www.youtube.com/watch?v=ez7HMO60kE8).
+If you'd like to see a video version of this demo, you can https://www.youtube.com/watch?v=ez7HMO60kE8[watch it on YouTube].
 
 == Create Microservices with JHipster
 
