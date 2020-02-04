@@ -123,6 +123,8 @@ deployment {
       </modules>
   </project>
 
+. Convert gateway to be a PWA
+
 . Create Docker images for Spring Boot apps
 
   mvn -Pprod verify com.google.cloud.tools:jib-maven-plugin:dockerBuild
@@ -163,6 +165,8 @@ deployment {
 . Prepare Okta for JHipster: `ROLE_ADMIN` group, groups in ID token, and JHipster Registry's redirect URIs
 
 . Demo JHipster Registry and gateway log in with Okta
+
+. Show Lighthouse Score
 
 . Finito! 🤓
 
