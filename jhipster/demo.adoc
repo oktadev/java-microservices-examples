@@ -4,7 +4,7 @@
 
 = Java Microservices with Spring Cloud Config and JHipster
 
-The brackets at the end of each step indicate the alias's or IntelliJ Live Templates to use. You can find the template definitions at https://github.com/mraible/idea-live-templates[mraible/idea-live-templates].
+If you'd like to see a video version of this demo, you can [watch it on YouTube](https://www.youtube.com/watch?v=ez7HMO60kE8).
 
 == Create Microservices with JHipster
 
