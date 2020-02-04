@@ -123,6 +123,8 @@ deployment {
       </modules>
   </project>
 
+. Convert gateway to be a PWA
+
 . Create Docker images for Spring Boot apps
 
   mvn -Pprod verify com.google.cloud.tools:jib-maven-plugin:dockerBuild
@@ -137,8 +139,6 @@ deployment {
   127.0.0.1  keycloak
 
 . Show JHipster Registry at `http://localhost:8761` and gateway at `http://localhost:8080`
-
-. Convert gateway to be a PWA and rebuild image
 
 == Configure JHipster Microservices to use Okta for Identity
 
