@@ -138,6 +138,8 @@ deployment {
 
 . Show JHipster Registry at `http://localhost:8761` and gateway at `http://localhost:8080`
 
+. Convert gateway to be a PWA and rebuild image
+
 == Configure JHipster Microservices to use Okta for Identity
 
 . Create a web app on Okta, use `http://localhost:8080/login/oauth2/code/oidc` for redirect URI
@@ -163,6 +165,8 @@ deployment {
 . Prepare Okta for JHipster: `ROLE_ADMIN` group, groups in ID token, and JHipster Registry's redirect URIs
 
 . Demo JHipster Registry and gateway log in with Okta
+
+. Show Lighthouse Score
 
 . Finito! 🤓
 
