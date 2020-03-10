@@ -14,7 +14,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -92,7 +92,7 @@ interface CarClient {
 
     @GetMapping("/cars")
     @CrossOrigin
-    Resources<Car> readCars();
+    CollectionModel<Car> readCars();
 }
 
 @RestController

@@ -32,13 +32,6 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
   sdk install java 11.0.2-open
   sdk default java 11.0.2-open
 
-. Add JAXB to `discovery-service` so it works with Java 11
-
-  <dependency>
-      <groupId>org.glassfish.jaxb</groupId>
-      <artifactId>jaxb-runtime</artifactId>
-  </dependency>
-
 . Add `@EnableEurekaServer` and properties to set port and turn off discovery
 
   server.port=8761
@@ -79,7 +72,7 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
   <dependency>
     <groupId>com.okta.spring</groupId>
     <artifactId>okta-spring-boot-starter</artifactId>
-    <version>1.2.1</version>
+    <version>1.4.0</version>
   </dependency>
 
 . Create a web app on Okta, use `http://localhost:8080/login/oauth2/code/okta` for redirect URI
