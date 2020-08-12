@@ -9,6 +9,9 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.security.oauth2.gateway.TokenRelayGatewayFilterFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -38,8 +41,13 @@ public class ApiGatewayApplication {
 
     @Bean
     @LoadBalanced
-    public WebClient.Builder loadBalancedWebClientBuilder() {
-        return WebClient.builder();
+    public WebClient webClient(ReactiveClientRegistrationRepository clientRegistrations,
+                               ServerOAuth2AuthorizedClientRepository authorizedClients) {
+        ServerOAuth2AuthorizedClientExchangeFilterFunction oauth =
+                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrations, authorizedClients);
+        oauth.setDefaultOAuth2AuthorizedClient(true);
+        oauth.setDefaultClientRegistrationId("okta");
+        return WebClient.builder().filter(oauth).build();
     }
 }
 
@@ -52,15 +60,15 @@ class Car {
 @RestController
 class FaveCarsController {
 
-    private final WebClient.Builder carClient;
+    private final WebClient carClient;
 
-    public FaveCarsController(WebClient.Builder carClient) {
+    public FaveCarsController(WebClient carClient) {
         this.carClient = carClient;
     }
 
     @GetMapping("/fave-cars")
     public Flux<Car> faveCars() {
-        return carClient.build().get().uri("lb://car-service/cars")
+        return carClient.get().uri("lb://car-service/cars")
                 .retrieve().bodyToFlux(Car.class)
                 .filter(this::isFavorite);
     }
