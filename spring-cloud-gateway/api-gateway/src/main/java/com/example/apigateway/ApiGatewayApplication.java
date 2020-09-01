@@ -9,6 +9,8 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.security.oauth2.gateway.TokenRelayGatewayFilterFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -59,8 +61,9 @@ class FaveCarsController {
     }
 
     @GetMapping("/fave-cars")
-    public Flux<Car> faveCars() {
+    public Flux<Car> faveCars(@RegisteredOAuth2AuthorizedClient("okta") OAuth2AuthorizedClient authorizedClient) {
         return carClient.build().get().uri("lb://car-service/cars")
+                .header("Authorization", "Bearer " + authorizedClient.getAccessToken().getTokenValue())
                 .retrieve().bodyToFlux(Car.class)
                 .filter(this::isFavorite);
     }
