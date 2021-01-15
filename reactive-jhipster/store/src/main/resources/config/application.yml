@@ -1,0 +1,206 @@
+# ===================================================================
+# Spring Boot configuration.
+#
+# This configuration will be overridden by the Spring profile you use,
+# for example application-dev.yml if you use the "dev" profile.
+#
+# More information on profiles: https://www.jhipster.tech/profiles/
+# More information on configuration properties: https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+
+eureka:
+  client:
+    enabled: true
+    healthcheck:
+      enabled: true
+    fetch-registry: true
+    register-with-eureka: true
+    instance-info-replication-interval-seconds: 10
+    registry-fetch-interval-seconds: 10
+  instance:
+    appname: store
+    instanceId: store:${spring.application.instance-id:${random.value}}
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+    status-page-url-path: ${management.endpoints.web.base-path}/info
+    health-check-url-path: ${management.endpoints.web.base-path}/health
+    metadata-map:
+      zone: primary # This is needed for the load balancer
+      profile: ${spring.profiles.active}
+      version: #project.version#
+      git-version: ${git.commit.id.describe:}
+      git-commit: ${git.commit.id.abbrev:}
+      git-branch: ${git.branch:}
+ribbon:
+  eureka:
+    enabled: true
+feign:
+  hystrix:
+    enabled: true
+  # client:
+  #   config:
+  #     default:
+  #       connectTimeout: 5000
+  #       readTimeout: 5000
+
+# See https://github.com/Netflix/Hystrix/wiki/Configuration
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE
+          # See https://github.com/spring-cloud/spring-cloud-netflix/issues/1330
+          # thread:
+          #   timeoutInMilliseconds: 10000
+  shareSecurityContext: true
+
+management:
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include:
+          ['configprops', 'env', 'health', 'info', 'jhimetrics', 'logfile', 'loggers', 'prometheus', 'threaddump', 'caches', 'liquibase']
+  endpoint:
+    health:
+      show-details: when_authorized
+      roles: 'ROLE_ADMIN'
+    jhimetrics:
+      enabled: true
+  info:
+    git:
+      mode: full
+  health:
+    group:
+      liveness:
+        include: livenessState
+      readiness:
+        include: readinessState
+    probes:
+      enabled: true
+    mail:
+      enabled: false # When using the MailService, configure an SMTP server and set this to true
+  metrics:
+    export:
+      # Prometheus is the default metrics backend
+      prometheus:
+        enabled: true
+        step: 60
+    enable:
+      http: true
+      jvm: true
+      logback: true
+      process: true
+      system: true
+    distribution:
+      percentiles-histogram:
+        all: true
+      percentiles:
+        all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
+    tags:
+      application: ${spring.application.name}
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
+
+spring:
+  application:
+    name: store
+  jmx:
+    enabled: false
+  messages:
+    basename: i18n/messages
+  main:
+    allow-bean-definition-overriding: true
+  task:
+    execution:
+      thread-name-prefix: store-task-
+      pool:
+        core-size: 2
+        max-size: 50
+        queue-capacity: 10000
+    scheduling:
+      thread-name-prefix: store-scheduling-
+      pool:
+        size: 2
+  thymeleaf:
+    mode: HTML
+  output:
+    ansi:
+      console-available: true
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: http://localhost:9080/auth/realms/jhipster
+        registration:
+          oidc:
+            client-id: internal
+            client-secret: internal
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+
+# Properties to be exposed on the /info management endpoint
+info:
+  # Comma separated list of profiles that will trigger the ribbon to show
+  display-ribbon-on-profiles: 'dev'
+
+# ===================================================================
+# JHipster specific properties
+#
+# Full reference is available at: https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+jhipster:
+  clientApp:
+    name: 'storeApp'
+  # By default CORS is disabled. Uncomment to enable.
+  # cors:
+  #   allowed-origins: "*"
+  #   allowed-methods: "*"
+  #   allowed-headers: "*"
+  #   exposed-headers: "Authorization,Link,X-Total-Count"
+  #   allow-credentials: true
+  #   max-age: 1800
+  mail:
+    from: store@localhost
+  api-docs:
+    default-include-pattern: /api/.*
+    title: store API
+    description: store API documentation
+    version: 0.0.1
+    terms-of-service-url:
+    contact-name:
+    contact-url:
+    contact-email:
+    license: unlicensed
+    license-url:
+  security:
+    oauth2:
+      audience:
+        - account
+        - api://default
+# ===================================================================
+# Application specific properties
+# Add your own application properties here, see the ApplicationProperties class
+# to have type-safe configuration, like in the JHipsterProperties above
+#
+# More documentation is available at:
+# https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+# application:

@@ -1,0 +1,52 @@
+{
+  "generator-jhipster": {
+    "authenticationType": "oauth2",
+    "cacheProvider": "no",
+    "serverPort": "8082",
+    "serviceDiscoveryType": "eureka",
+    "skipUserManagement": true,
+    "baseName": "store",
+    "buildTool": "gradle",
+    "databaseType": "mongodb",
+    "devDatabaseType": "mongodb",
+    "enableHibernateCache": false,
+    "enableSwaggerCodegen": false,
+    "enableTranslation": true,
+    "jhiPrefix": "jhi",
+    "languages": [
+      "en"
+    ],
+    "messageBroker": false,
+    "prodDatabaseType": "mongodb",
+    "searchEngine": false,
+    "skipClient": true,
+    "testFrameworks": [],
+    "websocket": false,
+    "reactive": true,
+    "packageName": "com.okta.developer.store",
+    "packageFolder": "com/okta/developer/store",
+    "applicationType": "microservice",
+    "jhipsterVersion": "7.0.0-beta.0",
+    "clientPackageManager": "npm",
+    "dtoSuffix": "DTO",
+    "entitySuffix": "",
+    "skipServer": false,
+    "skipCheckLengthOfIdentifier": false,
+    "skipFakeData": false,
+    "blueprints": [],
+    "otherModules": [],
+    "pages": [],
+    "clientFramework": "angularX",
+    "clientTheme": "none",
+    "clientThemeVariant": "",
+    "withAdminUi": true,
+    "nativeLanguage": "en",
+    "creationTimestamp": 1610689783365,
+    "jwtSecretKey": "ZGNiY2I2NzUwNGMwMmNiZjdlZjFlNzEyNDMxM2RhZWZmMDkzODE0MDMwOTA4YTA2YTVmMTVlMjIwZGJkNWU1NWI5NmQzNWQ1MjBkZGE2ZThjYWQ0ZGExMjI1YzMwNWU5OWQxOTYyNWIxNmYyMWY4M2I4MGEzYzlkOTQzM2ZjNjA=",
+    "lastLiquibaseTimestamp": 1610689843000,
+    "entities": [
+      "Product"
+    ],
+    "appFolder": "store"
+  }
+}

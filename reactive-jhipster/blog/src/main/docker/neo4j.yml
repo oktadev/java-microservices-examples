@@ -1,0 +1,14 @@
+# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
+version: '3.8'
+services:
+  blog-neo4j:
+    image: neo4j:4.2.1
+    # volumes:
+    #     - ~/volumes/jhipster/blog/neo4j/:/data
+    environment:
+      - NEO4J_AUTH=none
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - '127.0.0.1:7474:7474'
+      - '127.0.0.1:7687:7687'
