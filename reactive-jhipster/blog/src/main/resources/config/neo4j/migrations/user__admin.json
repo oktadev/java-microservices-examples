@@ -1,0 +1,13 @@
+{
+  "login": "admin",
+
+  "first_name": "Administrator",
+  "last_name": "Administrator",
+  "email": "admin@localhost",
+  "activated": true,
+  "lang_key": "en",
+  "created_by": "system",
+  "last_modified_by": "system",
+  "authorities": ["ROLE_USER", "ROLE_ADMIN"],
+  "_class": "com.okta.developer.blog.domain.User"
+}
