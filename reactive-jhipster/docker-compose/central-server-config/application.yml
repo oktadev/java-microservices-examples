@@ -7,11 +7,12 @@ jhipster:
   security:
     authentication:
       jwt:
-        base64-secret: YjRiOGY3NzU1NDA5ZDNmMTJkZmJhZjg0NGI0OTk1NzhkYTNiNjg1MGU1ZWZiYjQzYzViNWJhOGVkNmM2NWJjMzY3NWE1NWNkZGRhYTMzY2NjNzc1ZWUyY2Y4YjE1ZTY5Y2I5ZQ==
+        base64-secret: ZWE0MGM3MzNkOTVhNzNiZGIzN2ZhZGFmMzM2YzEzM2YyOTAxNjc2MmVlZDkyMjVkMTQ0YjIyOGE5M2JjMjZlZTFlNWY4NTdjOTkxNDc5NGVlYTYyODkzOGFkMDhiODdkOTA1NQ==
 eureka:
   client:
     service-url:
       defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/
+
 spring:
   security:
     oauth2:

@@ -31,5 +31,5 @@
   "microserviceName": "store",
   "clientRootFolder": "store",
   "databaseType": "mongodb",
-  "changelogDate": "20210115055043"
+  "changelogDate": "20210116001728"
 }
