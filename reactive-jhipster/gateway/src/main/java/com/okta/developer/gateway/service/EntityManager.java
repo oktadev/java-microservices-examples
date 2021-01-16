@@ -16,6 +16,7 @@ import org.springframework.data.r2dbc.mapping.SettableValue;
 import org.springframework.data.r2dbc.query.UpdateMapper;
 import org.springframework.data.relational.core.mapping.RelationalPersistentEntity;
 import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.sql.Conditions;
 import org.springframework.data.relational.core.sql.OrderByField;
 import org.springframework.data.relational.core.sql.Select;
 import org.springframework.data.relational.core.sql.SelectBuilder.SelectFromAndJoin;
@@ -79,11 +80,27 @@ public class EntityManager {
      * @param pageable page parameter, or null, if everything needs to be returned
      * @return sql select statement
      */
-    public String createSelect(SelectFromAndJoin selectFrom, Class<?> entityType, Pageable pageable) {
+    public String createSelect(SelectFromAndJoin selectFrom, Class<?> entityType, Pageable pageable, Criteria criteria) {
         if (pageable != null) {
-            return createSelectImpl(selectFrom.limitOffset(pageable.getPageSize(), pageable.getOffset()), entityType, pageable.getSort());
+            if (criteria != null) {
+                return createSelectImpl(
+                    selectFrom.limitOffset(pageable.getPageSize(), pageable.getOffset()).where(Conditions.just(criteria.toString())),
+                    entityType,
+                    pageable.getSort()
+                );
+            } else {
+                return createSelectImpl(
+                    selectFrom.limitOffset(pageable.getPageSize(), pageable.getOffset()),
+                    entityType,
+                    pageable.getSort()
+                );
+            }
         } else {
-            return createSelectImpl(selectFrom, entityType, null);
+            if (criteria != null) {
+                return createSelectImpl(selectFrom.where(Conditions.just(criteria.toString())), entityType, null);
+            } else {
+                return createSelectImpl(selectFrom, entityType, null);
+            }
         }
     }
 
@@ -94,11 +111,27 @@ public class EntityManager {
      * @param pageable page parameter, or null, if everything needs to be returned
      * @return sql select statement
      */
-    public String createSelect(SelectFromAndJoinCondition selectFrom, Class<?> entityType, Pageable pageable) {
+    public String createSelect(SelectFromAndJoinCondition selectFrom, Class<?> entityType, Pageable pageable, Criteria criteria) {
         if (pageable != null) {
-            return createSelectImpl(selectFrom.limitOffset(pageable.getPageSize(), pageable.getOffset()), entityType, pageable.getSort());
+            if (criteria != null) {
+                return createSelectImpl(
+                    selectFrom.limitOffset(pageable.getPageSize(), pageable.getOffset()).where(Conditions.just(criteria.toString())),
+                    entityType,
+                    pageable.getSort()
+                );
+            } else {
+                return createSelectImpl(
+                    selectFrom.limitOffset(pageable.getPageSize(), pageable.getOffset()),
+                    entityType,
+                    pageable.getSort()
+                );
+            }
         } else {
-            return createSelectImpl(selectFrom, entityType, null);
+            if (criteria != null) {
+                return createSelectImpl(selectFrom.where(Conditions.just(criteria.toString())), entityType, null);
+            } else {
+                return createSelectImpl(selectFrom, entityType, null);
+            }
         }
     }
 

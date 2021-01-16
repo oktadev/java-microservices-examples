@@ -15,12 +15,16 @@
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
     "jhiPrefix": "jhi",
-    "languages": ["en"],
+    "languages": [
+      "en"
+    ],
     "messageBroker": false,
     "prodDatabaseType": "postgresql",
     "searchEngine": false,
     "skipClient": false,
-    "testFrameworks": ["protractor"],
+    "testFrameworks": [
+      "protractor"
+    ],
     "websocket": false,
     "reactive": true,
     "packageName": "com.okta.developer.gateway",
@@ -39,9 +43,14 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1610689783338,
-    "lastLiquibaseTimestamp": 1610690023000,
-    "entities": ["Tag", "Product", "Blog", "Post"],
+    "creationTimestamp": 1610756188545,
+    "lastLiquibaseTimestamp": 1610756428000,
+    "entities": [
+      "Tag",
+      "Product",
+      "Blog",
+      "Post"
+    ],
     "appFolder": "gateway"
   }
 }

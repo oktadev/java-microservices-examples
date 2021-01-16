@@ -41,9 +41,9 @@
     "clientThemeVariant": "",
     "withAdminUi": true,
     "nativeLanguage": "en",
-    "creationTimestamp": 1610689783365,
-    "jwtSecretKey": "ZGNiY2I2NzUwNGMwMmNiZjdlZjFlNzEyNDMxM2RhZWZmMDkzODE0MDMwOTA4YTA2YTVmMTVlMjIwZGJkNWU1NWI5NmQzNWQ1MjBkZGE2ZThjYWQ0ZGExMjI1YzMwNWU5OWQxOTYyNWIxNmYyMWY4M2I4MGEzYzlkOTQzM2ZjNjA=",
-    "lastLiquibaseTimestamp": 1610689843000,
+    "creationTimestamp": 1610756188518,
+    "jwtSecretKey": "YWNmOWE2MzQ3YjdkMDgxNTMxNmQwYjljNWM3ZmQyN2RjMGM1MzUwZGZmNDM2YjU3YjhiNTYyOWIyY2E0ODI3OWFjMTQwNTlhNjM1M2FkMTEzODNmZWIzYzQyZjJmNjZkNzkzZTY0ODE2MWI0ODZhZjViNDFjYmI4OTRhYWVjYmU=",
+    "lastLiquibaseTimestamp": 1610756248000,
     "entities": [
       "Product"
     ],
