@@ -160,12 +160,6 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-        mavenContent {
-            snapshotsOnly()
-        }
-    }
     //jhipster-needle-gradle-repositories - JHipster will add additional repositories
 }
 
@@ -255,7 +249,7 @@ task cleanResources(type: Delete) {
 }
 
 wrapper {
-    gradleVersion = "6.7.1"
+    gradleVersion = "6.8"
 }
 
 compileJava.dependsOn processResources

@@ -42,8 +42,7 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "1.0.13-4.3.1",
-    "generator-jhipster": "7.0.0-beta.0",
+    "generator-jhipster": "7.0.0-beta.1",
     "husky": "4.3.7",
     "lint-staged": "10.5.3",
     "prettier": "2.2.1",

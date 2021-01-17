@@ -15,7 +15,7 @@ services:
       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET=internal
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
   blog-neo4j:
-    image: neo4j:4.2.1
+    image: neo4j:4.2.2
     # volumes:
     #     - ~/volumes/jhipster/blog/neo4j/:/data
     environment:
@@ -26,7 +26,7 @@ services:
       - '127.0.0.1:7474:7474'
       - '127.0.0.1:7687:7687'
   jhipster-registry:
-    image: jhipster/jhipster-registry:v6.5.0
+    image: jhipster/jhipster-registry:v6.6.0
     volumes:
       - ./central-server-config:/central-config
     # When run with the "dev" Spring profile, the JHipster Registry will

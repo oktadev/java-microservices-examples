@@ -32,7 +32,7 @@ services:
     ports:
       - 127.0.0.1:5432:5432
   jhipster-registry:
-    image: jhipster/jhipster-registry:v6.5.0
+    image: jhipster/jhipster-registry:v6.6.0
     volumes:
       - ./central-server-config:/central-config
     # When run with the "dev" Spring profile, the JHipster Registry will

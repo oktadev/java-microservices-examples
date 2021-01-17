@@ -39,7 +39,7 @@ services:
       - JHIPSTER_SLEEP=30
       - JHIPSTER_REGISTRY_PASSWORD=admin
   blog-neo4j:
-    image: neo4j:4.2.1
+    image: neo4j:4.2.2
     environment:
       - NEO4J_AUTH=none
 
@@ -59,10 +59,10 @@ services:
       - JHIPSTER_SLEEP=30
       - JHIPSTER_REGISTRY_PASSWORD=admin
   store-mongodb:
-    image: mongo:4.4.2
+    image: mongo:4.4.3
 
   jhipster-registry:
-    image: jhipster/jhipster-registry:v6.5.0
+    image: jhipster/jhipster-registry:v6.6.0
     volumes:
       - ./central-server-config:/central-config
     # By default the JHipster Registry runs with the "dev" and "native"

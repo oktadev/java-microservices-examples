@@ -15,22 +15,18 @@
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
     "jhiPrefix": "jhi",
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "messageBroker": false,
     "prodDatabaseType": "postgresql",
     "searchEngine": false,
     "skipClient": false,
-    "testFrameworks": [
-      "protractor"
-    ],
+    "testFrameworks": ["protractor"],
     "websocket": false,
     "reactive": true,
     "packageName": "com.okta.developer.gateway",
     "packageFolder": "com/okta/developer/gateway",
     "applicationType": "gateway",
-    "jhipsterVersion": "7.0.0-beta.0",
+    "jhipsterVersion": "7.0.0-beta.1",
     "skipServer": false,
     "clientPackageManager": "npm",
     "dtoSuffix": "DTO",
@@ -43,14 +39,9 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1610756188545,
-    "lastLiquibaseTimestamp": 1610756428000,
-    "entities": [
-      "Tag",
-      "Product",
-      "Blog",
-      "Post"
-    ],
+    "creationTimestamp": 1610916881975,
+    "lastLiquibaseTimestamp": 1610917121000,
+    "entities": ["Tag", "Product", "Blog", "Post"],
     "appFolder": "gateway"
   }
 }
