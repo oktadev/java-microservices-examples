@@ -29,5 +29,5 @@
   "microserviceName": "blog",
   "clientRootFolder": "blog",
   "databaseType": "neo4j",
-  "changelogDate": "20210116001728"
+  "changelogDate": "20210117205541"
 }

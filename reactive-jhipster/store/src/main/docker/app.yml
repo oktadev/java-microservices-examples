@@ -16,7 +16,7 @@ services:
       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET=internal
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
   store-mongodb:
-    image: mongo:4.4.2
+    image: mongo:4.4.3
     # If you want to expose these ports outside your dev PC,
     # remove the "127.0.0.1:" prefix
     ports:
@@ -24,7 +24,7 @@ services:
     # volumes:
     #     - ~/volumes/jhipster/store/mongodb/:/data/db/
   jhipster-registry:
-    image: jhipster/jhipster-registry:v6.5.0
+    image: jhipster/jhipster-registry:v6.6.0
     volumes:
       - ./central-server-config:/central-config
     # When run with the "dev" Spring profile, the JHipster Registry will

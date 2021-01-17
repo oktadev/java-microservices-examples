@@ -26,7 +26,7 @@
     "packageName": "com.okta.developer.store",
     "packageFolder": "com/okta/developer/store",
     "applicationType": "microservice",
-    "jhipsterVersion": "7.0.0-beta.0",
+    "jhipsterVersion": "7.0.0-beta.1",
     "clientPackageManager": "npm",
     "dtoSuffix": "DTO",
     "entitySuffix": "",
@@ -41,9 +41,9 @@
     "clientThemeVariant": "",
     "withAdminUi": true,
     "nativeLanguage": "en",
-    "creationTimestamp": 1610756188518,
-    "jwtSecretKey": "YWNmOWE2MzQ3YjdkMDgxNTMxNmQwYjljNWM3ZmQyN2RjMGM1MzUwZGZmNDM2YjU3YjhiNTYyOWIyY2E0ODI3OWFjMTQwNTlhNjM1M2FkMTEzODNmZWIzYzQyZjJmNjZkNzkzZTY0ODE2MWI0ODZhZjViNDFjYmI4OTRhYWVjYmU=",
-    "lastLiquibaseTimestamp": 1610756248000,
+    "creationTimestamp": 1610916881976,
+    "jwtSecretKey": "MzRkYmVmNmJmNzk0MjA0MjU0OTJkMTRjMDBlYmNmMGZhZjc0ZDAzZGRmOWQzYTBmOWNiNGM5ODdiMzcwZmViNzRiM2UyZGYwMDgwZWQ3ZmY3Y2Q1OTZjZGQ5MmYwODIxZDNjZjljNWRiYzBmNzcwYzg0ZWY2ZjhiODEzYzczM2E=",
+    "lastLiquibaseTimestamp": 1610916941000,
     "entities": [
       "Product"
     ],
