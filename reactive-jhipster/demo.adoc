@@ -5,15 +5,13 @@
 
 == Reactive Java Microservices with JHipster Demo Steps
 
-Today, I'd like to show you how to use the JHipster 7 to create a reactive Java microservices architecture.
+Today, I'd like to show you how to use the JHipster 7 to create a reactive Java microservices architecture with Spring Boot, Spring Cloud, Spring Cloud Gateway, and Spring WebFlux.
 
 **Prerequisites:**
 
-* https://adoptopenjdk.net/[Java 11]+
-* https://nodejs.org/[Node 14]+
-* https://docs.docker.com/get-docker/[Docker]
-
-TIP: The brackets at the end of some steps indicate the IntelliJ Live Templates to use. You can find the template definitions at https://github.com/mraible/idea-live-templates[mraible/idea-live-templates].
+- https://adoptopenjdk.net/[Java 11]+
+- https://nodejs.org/[Node 14]+
+- https://docs.docker.com/get-docker/[Docker]
 
 toc::[]
 
@@ -27,8 +25,6 @@ In this demo, I'll show you how to generate a microservice architecture that use
 ----
 npm i -g generator-jhipster@beta
 ----
-
-=== Design a Micronaut Data Model with JHipster's JDL
 
 . Create a directory called `reactive-stack` and initialize `git`.
 +
@@ -195,7 +191,7 @@ docker-compose -f src/main/docker/mongodb.yml up -d #jhmongoup
 +
 NOTE: JHipster has support for https://www.cypress.io/[Cypress], but it https://github.com/jhipster/generator-jhipster/issues/12686[doesn't work with Okta] yet.
 
-== Prepare Your Reactive Java Stack for Production
+=== Prepare Your Reactive Java Stack for Production
 
 Keycloak is a superb open source identity provider. It has excellent support for OAuth 2.0 and OpenID Connect (OIDC) and easily runs in a Docker container. I greatly appreciate Keycloak's ease-of-use. I also ❤️ Spring Security's OAuth and OIDC support.
 
@@ -214,14 +210,19 @@ spring:
 
 . Install the https://cli.okta.com[Okta CLI] and run `okta register`.
 
-. In the gateway project's directory, run `okta apps create jhipster`. Accept the default redirect URIs.
+. In the gateway project's directory, run the command below. Accept the default redirect URIs.
++
+[source,shell]
+----
+okta apps create jhipster
+----
 
-=== Update the JHipster Registry to Distribute OIDC Configuration
+==== Update the JHipster Registry to Distribute OIDC Configuration
 
 Spring Cloud Config allows you to distribute Spring's configuration between apps. In this section, you'll configure JHipster's Spring Security settings to use Okta across all your services.
 
 . Add the following YAML to `gateway/src/main/docker/central-server-config/localhost-config/application.yml`. You can find the values for each property in the `.okta.env` file.
-
++
 [source,yaml]
 ----
 spring:
@@ -247,7 +248,7 @@ jhregistryup
 
 . Use kbd:[Ctrl + C] to kill all your `./gradlew` processes and start them again.
 
-. Open a new incognito browser window, go to `http://localhost:8080`, and sign in. Rejoice that using Okta for authentication works!
+. Open an incognito window, go to `http://localhost:8080`, and sign in. Rejoice that using Okta for authentication works!
 
 . If you're feeling lucky, you can set your Okta credentials as environment variables and run end-to-end tests (from the `gateway` directory).
 +
@@ -258,7 +259,7 @@ export E2E_PASSWORD=<your-password>
 npm run e2e
 ----
 
-== Create Docker Images for Your Microservice Apps
+=== Create Docker Images for Your Microservice Apps
 
 . Stop all your apps with kbd:[Ctrl + C]. Stop all your Docker instances too.
 +
@@ -276,7 +277,7 @@ TIP: Bump up the memory and CPU that Docker uses in Docker > Preferences > Resou
 ./gradlew -Pprod bootJar jibDockerBuild
 ----
 
-== Run Your Microservices Stack with Docker Compose
+=== Run Your Microservices Stack with Docker Compose
 
 Once your Docker containers are finished building, you'll want to add your Okta settings to Spring Cloud Config in JHipster Registry.
 
@@ -329,7 +330,7 @@ JHipster creates a cloud-native microservices architecture that can be deployed 
 
 However, if you're doing microservices, you'll probably want to leverage Docker as you did in this tutorial. When your apps are containerized, they can be orchestrated with Kubernetes.
 
-JHipster has a https://www.jhipster.tech/kubernetes/[Kubernetes] sub-generator that you can use to deploy it to the cloud. I'll cover this in a future tutorial.
+JHipster has a https://www.jhipster.tech/kubernetes/[Kubernetes] sub-generator that you can use to deploy it to the cloud. I'll cover this in a future demo.
 
 In the meantime, you can watch a presentation that https://twitter.com/saturnism[Ray Tsang] and I did recently that shows how to deploy JHipster microservices with Kubernetes. If you start watching from https://youtu.be/AG4z18qePEw?t=2778[46:18], you'll see Ray show how to deploy to Google Cloud using Kubernetes.
 
@@ -347,7 +348,7 @@ Are you dealing with massive amounts of steaming data and millions of customers?
 
 What about https://wiki.openjdk.java.net/display/loom/Main[Project Loom]? Will it allow you to write regular non-reactive code that performs as good as reactive frameworks? I'm not sure. I'm betting on reactive for now. I think it's a good skill to have for Java developers.
 
-== Stay hip with JHipster!
+== Stay Hip with JHipster!
 
 ⛑ Find the code on GitHub: https://github.com/oktadeveloper/java-microservices-examples/tree/main/reactive-jhipster[@oktadeveloper/java-microservices-examples/reactive-jhipster].
 
