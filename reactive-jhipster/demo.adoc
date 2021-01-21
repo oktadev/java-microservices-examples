@@ -1,0 +1,356 @@
+:experimental:
+// Define unicode for Apple Command key.
+:commandkey: &#8984;
+:toc: macro
+
+== Reactive Java Microservices with JHipster Demo Steps
+
+Today, I'd like to show you how to use the JHipster 7 to create a reactive Java microservices architecture with Spring Boot, Spring Cloud, Spring Cloud Gateway, and Spring WebFlux.
+
+**Prerequisites:**
+
+- https://adoptopenjdk.net/[Java 11]+
+- https://nodejs.org/[Node 14]+
+- https://docs.docker.com/get-docker/[Docker]
+
+toc::[]
+
+=== Build a Reactive Java Microservices Architecture
+
+In this demo, I'll show you how to generate a microservice architecture that uses OAuth 2.0, an API gateway, and two microservices (a blog and a store). The gateway will use PostgreSQL with R2DBC, the blog will use Neo4j, and the store will use MongoDB.
+
+. Install JHipster 7:
++
+[source,shell]
+----
+npm i -g generator-jhipster@beta
+----
+
+. Create a directory called `reactive-stack` and initialize `git`.
++
+[source,shell]
+----
+take reactive-stack # mkdir reactive-stack && cd reactive-stack
+git init # initialize git, so apps aren't created with their own .git
+----
+
+. Use the JDL below to define your architecture and apps.
++
+====
+----
+application {
+  config {
+    baseName gateway // <1>
+    reactive true // <2>
+    packageName com.okta.developer.gateway
+    applicationType gateway
+    authenticationType oauth2 // <3>
+    buildTool gradle // <4>
+    clientFramework vue // <5>
+    prodDatabaseType postgresql
+    serviceDiscoveryType eureka
+    testFrameworks [protractor]
+  }
+  entities Blog, Post, Tag, Product
+}
+
+application {
+  config {
+    baseName blog
+    reactive true
+    packageName com.okta.developer.blog
+    applicationType microservice // <6>
+    authenticationType oauth2
+    buildTool gradle
+    databaseType neo4j
+    devDatabaseType neo4j
+    prodDatabaseType neo4j
+    enableHibernateCache false
+    serverPort 8081
+    serviceDiscoveryType eureka
+  }
+  entities Blog, Post, Tag
+}
+
+application {
+  config {
+    baseName store
+    reactive true
+    packageName com.okta.developer.store
+    applicationType microservice
+    authenticationType oauth2
+    buildTool gradle
+    databaseType mongodb
+    devDatabaseType mongodb
+    prodDatabaseType mongodb
+    enableHibernateCache false
+    serverPort 8082
+    serviceDiscoveryType eureka
+  }
+  entities Product
+}
+
+entity Blog {
+  name String required minlength(3)
+  handle String required minlength(2)
+}
+
+entity Post {
+  title String required
+  content TextBlob required
+  date Instant required
+}
+
+entity Tag {
+  name String required minlength(2)
+}
+
+entity Product {
+  title String required
+  price BigDecimal required min(0)
+  image ImageBlob
+}
+
+relationship ManyToOne {
+  Blog{user(login)} to User
+  Post{blog(name)} to Blog
+}
+
+relationship ManyToMany {
+  Post{tag(name)} to Tag{post}
+}
+
+paginate Post, Tag with infinite-scroll
+paginate Product with pagination
+
+microservice Product with store
+microservice Blog, Post, Tag with blog
+
+deployment { // <7>
+  deploymentType docker-compose
+  appsFolders [gateway, blog, store]
+  dockerRepositoryName "mraible"
+}
+----
+<.> The first app is an API gateway.
+<.> Because the gateway is reactive, it'll use Spring Cloud Gateway.
+<.> The gateway and microservice apps must use the same authentication type.
+<.> Use Gradle, because a lot of y'all love it.
+<.> Vue support is new in JHipster 7, let's use it!
+<.> Make sure and specify `microservice` as the application type for the blog and store apps.
+<.> JDL allows you to create Docker Compose and Kubernetes deployments too!
+====
++
+TIP: You can find additional JDL samples on GitHub in the https://github.com/jhipster/jdl-samples[jdl-samples repository].
+
+. Import this architecture definition and generate `gateway`, `blog`, and `store` apps.
++
+[source,shell]
+----
+jhipster jdl reactive-ms.jdl
+----
++
+As part of this process, several Docker Compose files are generated for you. These allow you to run databases, the https://www.jhipster.tech/jhipster-registry/[JHipster Registry] (for service discovery), https://www.keycloak.org/[Keycloak] (for identity), all with Docker.
+
+=== Run Your Reactive Java Microservices
+
+. Open a terminal and run the following commands to start Keycloak, PostgreSQL, and Keycloak.
++
+[source,shell]
+----
+cd gateway
+docker-compose -f src/main/docker/keycloak.yml up -d #jhkeycloakup
+docker-compose -f src/main/docker/postgresql.yml up -d #jhpostgresqlup
+docker-compose -f src/main/docker/jhipster-registery up -d #jhregistryup
+./gradlew
+----
++
+TIP: JHipster has a https://www.jhipster.tech/oh-my-zsh/[Oh My ZSH! plugin] that I highly recommend. It provides aliases for starting Docker containers and is a real time-saver. I've included these commands as comments above.
+
+. Open a new terminal window, start the blog app's Neo4j database, and then the app itself.
++
+[source,shell]
+----
+cd ../blog
+docker-compose -f src/main/docker/neo4j.yml up -d #jhneo4jup
+./gradlew
+----
+
+. Open another terminal window, start the store app's MongoDB database, and the microservice.
++
+[source,shell]
+----
+cd ../store
+docker-compose -f src/main/docker/mongodb.yml up -d #jhmongoup
+./gradlew
+----
+
+. Open `http://localhost:8080` in your favorite browser. You should be able to login with `admin/admin` as credentials.
+
+. To prove everything works, you can run `npm run e2e` in the gateway project's directory. This will run a number of end-to-end tests with https://www.protractortest.org/[Protractor].
++
+NOTE: JHipster has support for https://www.cypress.io/[Cypress], but it https://github.com/jhipster/generator-jhipster/issues/12686[doesn't work with Okta] yet.
+
+=== Prepare Your Reactive Java Stack for Production
+
+Keycloak is a superb open source identity provider. It has excellent support for OAuth 2.0 and OpenID Connect (OIDC) and easily runs in a Docker container. I greatly appreciate Keycloak's ease-of-use. I also ❤️ Spring Security's OAuth and OIDC support.
+
+Spring Security makes it so you only need to override three properties to switch from Keycloak to Okta!
+
+Spring Cloud Gateway makes it easy to relay an access token between a gateway and microservices. It's just five lines of YAML:
+
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay
+----
+
+. Install the https://cli.okta.com[Okta CLI] and run `okta register`.
+
+. In the gateway project's directory, run the command below. Accept the default redirect URIs.
++
+[source,shell]
+----
+okta apps create jhipster
+----
+
+==== Update the JHipster Registry to Distribute OIDC Configuration
+
+Spring Cloud Config allows you to distribute Spring's configuration between apps. In this section, you'll configure JHipster's Spring Security settings to use Okta across all your services.
+
+. Add the following YAML to `gateway/src/main/docker/central-server-config/localhost-config/application.yml`. You can find the values for each property in the `.okta.env` file.
++
+[source,yaml]
+----
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: https://<your-okta-domain>/oauth2/default
+        registration:
+          oidc:
+            client-id: <client-id>
+            client-secret: <client-secret>
+----
+
+. Save your changes and restart the JHipster Registry:
++
+[source,shell]
+----
+jhregistrydown
+jhregistryup
+----
+
+. Use kbd:[Ctrl + C] to kill all your `./gradlew` processes and start them again.
+
+. Open an incognito window, go to `http://localhost:8080`, and sign in. Rejoice that using Okta for authentication works!
+
+. If you're feeling lucky, you can set your Okta credentials as environment variables and run end-to-end tests (from the `gateway` directory).
++
+[source,shell]
+----
+export E2E_USERNAME=<your-username>
+export E2E_PASSWORD=<your-password>
+npm run e2e
+----
+
+=== Create Docker Images for Your Microservice Apps
+
+. Stop all your apps with kbd:[Ctrl + C]. Stop all your Docker instances too.
++
+[source,shell]
+----
+docker stop $(docker ps -a -q)
+----
++
+TIP: Bump up the memory and CPU that Docker uses in Docker > Preferences > Resources. I have my Docker preferences set to 6 CPUs and 12GB of RAM.
+
+. To run your reactive stack with Docker Compose, you need to create Docker images for each app. In your three different app directories, run the following Gradle command:
++
+[source,shell]
+----
+./gradlew -Pprod bootJar jibDockerBuild
+----
+
+=== Run Your Microservices Stack with Docker Compose
+
+Once your Docker containers are finished building, you'll want to add your Okta settings to Spring Cloud Config in JHipster Registry.
+
+. Open `docker-compose/docker-compose.yml` in your favorite IDE and remove the Keycloak image at the bottom. You can leave it if you like, but it won't be used in this example.
+
+. Update `docker-compose/central-server-config/application.yml` to contain your OIDC settings that you want to share with all your microservices.
++
+[source,yaml]
+----
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: https://<your-okta-domain>/oauth2/default
+        registration:
+          oidc:
+            client-id: <client-id>
+            client-secret: <client-secret>
+----
+
+. In the `docker-compose` directory, run the following command to start all your containers.
++
+[source,shell]
+----
+docker-compose up
+----
+
+. Open `http://localhost:8080`, sign in, and access all of your microservices. Pretty slick, eh?! 🤓
+
+== What About Kotlin Microservices?
+
+JHipster supports Kotlin-based microservices thanks to its https://github.com/jhipster/jhipster-kotlin[Kotlin blueprint], supported by https://github.com/sendilkumarn[Sendil Kumar N].
+
+You can install it using npm:
+
+[source,shell]
+----
+npm install -g generator-jhipster-kotlin
+----
+
+Then, use `khipster jdl reactive-ms` to create the same stack you did above with Kotlin.
+
+NOTE: At the time of this writing, JHipster's Kotlin blueprint doesn't support JHipster 7. Watch the https://github.com/jhipster/jhipster-kotlin/releases[project's releases page] for updates.
+
+== How Do I Deploy to the Cloud?
+
+JHipster creates a cloud-native microservices architecture that can be deployed to many cloud providers. There's specific support for AWS, Microsoft Azure, Heroku, and Google Cloud Platform.
+
+However, if you're doing microservices, you'll probably want to leverage Docker as you did in this tutorial. When your apps are containerized, they can be orchestrated with Kubernetes.
+
+JHipster has a https://www.jhipster.tech/kubernetes/[Kubernetes] sub-generator that you can use to deploy it to the cloud. I'll cover this in a future demo.
+
+In the meantime, you can watch a presentation that https://twitter.com/saturnism[Ray Tsang] and I did recently that shows how to deploy JHipster microservices with Kubernetes. If you start watching from https://youtu.be/AG4z18qePEw?t=2778[46:18], you'll see Ray show how to deploy to Google Cloud using Kubernetes.
+
+++++
+<div style="text-align: center; margin-bottom: 1.25rem">
+<iframe width="700" height="394" src="https://www.youtube.com/embed/AG4z18qePEw" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+++++
+
+== Should You Go Reactive?
+
+As with most software architecture decisions, it depends. Are you building CRUD apps? Then no, Spring MVC is good enough.
+
+Are you dealing with massive amounts of steaming data and millions of customers? Then yes, reactive frameworks like Spring WebFlux might just save you $$$ on your monthly cloud bill.
+
+What about https://wiki.openjdk.java.net/display/loom/Main[Project Loom]? Will it allow you to write regular non-reactive code that performs as good as reactive frameworks? I'm not sure. I'm betting on reactive for now. I think it's a good skill to have for Java developers.
+
+== Stay Hip with JHipster!
+
+⛑ Find the code on GitHub: https://github.com/oktadeveloper/java-microservices-examples/tree/main/reactive-jhipster[@oktadeveloper/java-microservices-examples/reactive-jhipster].
+
+👀 Read the blog post: https://developer.okta.com/blog/2021/01/20/reactive-java-microservices[Reactive Java Microservices with Spring Boot and JHipster].
+
