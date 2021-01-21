@@ -1,5 +1,5 @@
 
-# Java Microservices with Spring Boot and Spring Cloud 🍃☁️
+# Java Microservices with Spring Boot & Spring Cloud 🍃☁️
  
 This repository contains examples of how to build a Java microservices architecture with Spring Boot, Spring Cloud, and Netflix Eureka.
 
