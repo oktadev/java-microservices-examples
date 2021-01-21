@@ -56,7 +56,7 @@ Save your changes. These values will be distributed to the JHipster Registry, ga
 cd gateway
 docker-compose -f src/main/docker/keycloak.yml up -d #jhkeycloakup
 docker-compose -f src/main/docker/postgresql.yml up -d #jhpostgresqlup
-docker-compose -f src/main/docker/jhipster-registery up -d #jhregistryup
+docker-compose -f src/main/docker/jhipster-registry.yml up -d #jhregistryup
 ./gradlew
 ```
 
