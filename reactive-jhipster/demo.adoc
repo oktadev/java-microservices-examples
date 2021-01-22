@@ -154,7 +154,7 @@ As part of this process, several Docker Compose files are generated for you. The
 
 === Run Your Reactive Java Microservices
 
-. Open a terminal and run the following commands to start Keycloak, PostgreSQL, and Keycloak.
+. Open a terminal and run the following commands to start Keycloak, PostgreSQL, and the JHipster Registry.
 +
 [source,shell]
 ----
