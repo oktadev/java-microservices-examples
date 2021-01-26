@@ -184,6 +184,17 @@ cd ../store
 docker-compose -f src/main/docker/mongodb.yml up -d #jhmongoup
 ./gradlew
 ----
++
+[CAUTION]
+====
+To make Keycloak work, you need to add the following line to your hosts file (`/etc/hosts` on Mac/Linux, `c:\Windows\System32\Drivers\etc\hosts` on Windows).
+
+----
+127.0.0.1	keycloak
+----
+
+This is because you will access your application with a browser on your machine (which is named localhost, or `127.0.0.1`), but inside Docker, it will run in its own container, which is named `keycloak`.
+====
 
 . Open `http://localhost:8080` in your favorite browser. You should be able to login with `admin/admin` as credentials.
 
