@@ -27,7 +27,7 @@ describe('Account', () => {
     it('should fail to login with bad password', async () => {
       signInPage = await navBarPage.getSignInPage();
       await signInPage.login(username, 'foo');
-      const alert = element(by.css('.alert-error'));
+      const alert = element(by.css('#input-error'));
       if (await alert.isPresent()) {
         // Keycloak
         expect(await alert.getText()).to.eq('Invalid username or password.');

@@ -1,7 +1,6 @@
 {
   "generator-jhipster": {
     "authenticationType": "oauth2",
-    "cacheProvider": "no",
     "clientFramework": "vue",
     "serverPort": "8080",
     "serviceDiscoveryType": "eureka",
@@ -11,6 +10,7 @@
     "buildTool": "gradle",
     "databaseType": "sql",
     "devDatabaseType": "h2Disk",
+    "cacheProvider": "no",
     "enableHibernateCache": false,
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
@@ -39,9 +39,12 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1610916881975,
-    "lastLiquibaseTimestamp": 1610917121000,
+    "creationTimestamp": 1616016415576,
     "entities": ["Tag", "Product", "Blog", "Post"],
-    "appFolder": "gateway"
+    "lastLiquibaseTimestamp": 1616016655000,
+    "appFolder": "gateway",
+    "clusteredDb": false,
+    "targetImageName": "gcr.io/jhipster7/gateway",
+    "dbPeerCount": 1
   }
 }

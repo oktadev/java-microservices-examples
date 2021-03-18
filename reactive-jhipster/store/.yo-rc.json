@@ -13,9 +13,7 @@
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
     "jhiPrefix": "jhi",
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "messageBroker": false,
     "prodDatabaseType": "mongodb",
     "searchEngine": false,
@@ -41,12 +39,13 @@
     "clientThemeVariant": "",
     "withAdminUi": true,
     "nativeLanguage": "en",
-    "creationTimestamp": 1610916881976,
-    "jwtSecretKey": "MzRkYmVmNmJmNzk0MjA0MjU0OTJkMTRjMDBlYmNmMGZhZjc0ZDAzZGRmOWQzYTBmOWNiNGM5ODdiMzcwZmViNzRiM2UyZGYwMDgwZWQ3ZmY3Y2Q1OTZjZGQ5MmYwODIxZDNjZjljNWRiYzBmNzcwYzg0ZWY2ZjhiODEzYzczM2E=",
-    "lastLiquibaseTimestamp": 1610916941000,
-    "entities": [
-      "Product"
-    ],
-    "appFolder": "store"
+    "creationTimestamp": 1616016415622,
+    "jwtSecretKey": "MWM1MzkyZTI5ZTMyMWZlODUxM2Q4MzM4YzNmYTNiOGI4ZDNkMjYwYThhMTE4Y2MwZWU3N2Y2NWE1ZDI1ZjdjZTE1NWRkMTViNThkZjMwYjg4ODdmZDRjZGE4N2U4ZWEyMzJlMWFkOTliYzA3Y2ZjYzY1NjJkMTM3NTc2NTYwYmI=",
+    "entities": ["Product"],
+    "lastLiquibaseTimestamp": 1616016475000,
+    "appFolder": "store",
+    "clusteredDb": true,
+    "targetImageName": "gcr.io/jhipster7/store",
+    "dbPeerCount": 3
   }
 }

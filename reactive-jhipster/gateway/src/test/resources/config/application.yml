@@ -29,6 +29,9 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration
+  cloud:
+    config:
+      enabled: false
   jackson:
     serialization:
       write-durations-as-timestamps: false

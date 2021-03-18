@@ -20,9 +20,20 @@ eureka:
     appname: store
     instanceId: store:${spring.application.instance-id:${random.value}}
 
+mongock:
+  change-logs-scan-package:
+    - com.okta.developer.store.config.dbmigrations
+  mongo-db:
+    read-concern: local
+    write-concern:
+      journal: false
+
 spring:
   application:
     name: store
+  cloud:
+    config:
+      enabled: false
   jackson:
     serialization:
       write-durations-as-timestamps: false

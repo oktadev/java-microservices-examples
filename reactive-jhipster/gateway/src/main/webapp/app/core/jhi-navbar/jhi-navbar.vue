@@ -84,7 +84,7 @@
             <font-awesome-icon icon="book" />
             <span v-text="$t('global.menu.admin.apidocs')">API</span>
           </b-dropdown-item>
-          <b-dropdown-item v-if="!inProduction" href="./h2-console" target="_tab">
+          <b-dropdown-item v-if="!inProduction" href="http://localhost:8092/" target="_tab">
             <font-awesome-icon icon="database" />
             <span v-text="$t('global.menu.admin.database')">Database</span>
           </b-dropdown-item>

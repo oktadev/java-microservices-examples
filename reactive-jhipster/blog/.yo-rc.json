@@ -13,9 +13,7 @@
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
     "jhiPrefix": "jhi",
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "messageBroker": false,
     "prodDatabaseType": "neo4j",
     "searchEngine": false,
@@ -41,14 +39,13 @@
     "clientThemeVariant": "",
     "withAdminUi": true,
     "nativeLanguage": "en",
-    "creationTimestamp": 1610916881976,
-    "jwtSecretKey": "NDVmYjZkMjcwZjVjNGNlYWVmMjdmOGUwODg3Y2Q3NzJmOGYyYWE1ZDAyY2QxMDc5YjQyYTNmNWJiZGU5Y2ZhNWM3OWY2Mzg2YzI5YmFkZTY3MDQxOThkZDg3YWQ3MGFiMmEwMzc3NjE2OTcyMTY3MGIwYzRkMjhjY2QwNWE4NGI=",
-    "lastLiquibaseTimestamp": 1610917061000,
-    "entities": [
-      "Tag",
-      "Blog",
-      "Post"
-    ],
-    "appFolder": "blog"
+    "creationTimestamp": 1616016415646,
+    "jwtSecretKey": "OGI5OGVhZjJlNWIzNTc1NTdlNmNmMGU3NDgyNzdhOTQ5ZDMwNmUwZGE5NDdhNjgwZjljYjZlOGU0NTBjYTUzMzY1NWY5YzFkZDk5YTc2YjVhZmNjMTQ2YjU2OWQwNGQ0YzU3MzkyM2NhZWMyN2NhZWE2MWEwY2UxMDZhNDM4ZmM=",
+    "entities": ["Tag", "Blog", "Post"],
+    "lastLiquibaseTimestamp": 1616016595000,
+    "appFolder": "blog",
+    "clusteredDb": false,
+    "targetImageName": "gcr.io/jhipster7/blog",
+    "dbPeerCount": 1
   }
 }

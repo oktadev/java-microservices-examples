@@ -7,20 +7,8 @@ jhipster:
   security:
     authentication:
       jwt:
-        base64-secret: OTRmYjFhMjI5MGU3YjljYzcwODkyOGNmYjU1ODI1MzM1NmU5ZDkwNTVhNWZjZWY2NGRjMzA4OTRmOWUyODg2OGY4MzY1YmI2ZjU0YTkyNmUzNzE1OGYwZTAzYmVlZjMwN2JkNA==
+        base64-secret: NGExOGMyZWVkMjFhN2NlNjAxYzU3M2NmNmNkNDI0ODYyOGYxMWVkMDVlMDI4YjQ5NzIzMTgxYjkzYjVmNTdlMzFjNmZiMDZiYWIzMmQzZTM0NTYyYzEyMDg3MjNjZTcyMGExYQ==
 eureka:
   client:
     service-url:
       defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/
-
-spring:
-  security:
-    oauth2:
-      client:
-        provider:
-          oidc:
-            issuer-uri: https://dev-5597275.okta.com/oauth2/default
-        registration:
-          oidc:
-            client-id: 0oa3uual4i6ffbhv75d6
-            client-secret: DegK6VVxkhHPmvud4Xrl_kh-dYcvOemwR8CHYvHK

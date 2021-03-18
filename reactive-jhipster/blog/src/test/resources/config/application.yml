@@ -30,6 +30,9 @@ eureka:
 spring:
   application:
     name: blog
+  cloud:
+    config:
+      enabled: false
   jackson:
     serialization:
       write-durations-as-timestamps: false
