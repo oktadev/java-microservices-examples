@@ -13,9 +13,7 @@
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
     "jhiPrefix": "jhi",
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "messageBroker": false,
     "prodDatabaseType": "mongodb",
     "searchEngine": false,
@@ -26,7 +24,7 @@
     "packageName": "com.okta.developer.store",
     "packageFolder": "com/okta/developer/store",
     "applicationType": "microservice",
-    "jhipsterVersion": "7.0.0-beta.1",
+    "jhipsterVersion": "7.0.0",
     "clientPackageManager": "npm",
     "dtoSuffix": "DTO",
     "entitySuffix": "",
@@ -41,12 +39,10 @@
     "clientThemeVariant": "",
     "withAdminUi": true,
     "nativeLanguage": "en",
-    "creationTimestamp": 1610916881976,
-    "jwtSecretKey": "MzRkYmVmNmJmNzk0MjA0MjU0OTJkMTRjMDBlYmNmMGZhZjc0ZDAzZGRmOWQzYTBmOWNiNGM5ODdiMzcwZmViNzRiM2UyZGYwMDgwZWQ3ZmY3Y2Q1OTZjZGQ5MmYwODIxZDNjZjljNWRiYzBmNzcwYzg0ZWY2ZjhiODEzYzczM2E=",
-    "lastLiquibaseTimestamp": 1610916941000,
-    "entities": [
-      "Product"
-    ],
+    "creationTimestamp": 1616651662172,
+    "jwtSecretKey": "ZGU2NzVmZTU2NTg5ZmI5Mzg1ODBjMWVmMTZhNjhlMWYxNTEzYzlkMjFmYjI4MjYwM2VlZTVmZTI1NTM4NmNlNTJmZDU1NzAwYjNkYmQ2YjNiZGI3Zjk4ODc5MDMyYzFkYTJlYWY1MGQ1ZWUxNTI5NjQ0NDFlMWRjZjZlMjQ2Mzc=",
+    "entities": ["Product"],
+    "lastLiquibaseTimestamp": 1616651722000,
     "appFolder": "store"
   }
 }

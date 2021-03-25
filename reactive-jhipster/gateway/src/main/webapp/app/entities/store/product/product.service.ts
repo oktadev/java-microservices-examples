@@ -62,7 +62,20 @@ export default class ProductService {
   public update(entity: IProduct): Promise<IProduct> {
     return new Promise<IProduct>((resolve, reject) => {
       axios
-        .put(`${baseApiUrl}`, entity)
+        .put(`${baseApiUrl}/${entity.id}`, entity)
+        .then(res => {
+          resolve(res.data);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  public partialUpdate(entity: IProduct): Promise<IProduct> {
+    return new Promise<IProduct>((resolve, reject) => {
+      axios
+        .patch(`${baseApiUrl}/${entity.id}`, entity)
         .then(res => {
           resolve(res.data);
         })

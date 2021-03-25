@@ -1,15 +1,15 @@
 application {
   config {
-    baseName gateway
-    reactive true
+    baseName gateway 
+    reactive true 
     packageName com.okta.developer.gateway
     applicationType gateway
-    authenticationType oauth2
-    buildTool gradle
-    clientFramework vue
+    authenticationType oauth2 
+    buildTool gradle 
+    clientFramework vue 
     prodDatabaseType postgresql
     serviceDiscoveryType eureka
-    testFrameworks [protractor]
+    testFrameworks [cypress] 
   }
   entities Blog, Post, Tag, Product
 }
@@ -19,7 +19,7 @@ application {
     baseName blog
     reactive true
     packageName com.okta.developer.blog
-    applicationType microservice
+    applicationType microservice 
     authenticationType oauth2
     buildTool gradle
     databaseType neo4j
@@ -86,7 +86,7 @@ paginate Product with pagination
 microservice Product with store
 microservice Blog, Post, Tag with blog
 
-deployment {
+deployment { 
   deploymentType docker-compose
   appsFolders [gateway, blog, store]
   dockerRepositoryName "mraible"

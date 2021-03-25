@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -80,35 +81,52 @@ public class TagResource {
     }
 
     /**
-     * {@code PUT  /tags} : Updates an existing tag.
+     * {@code PUT  /tags/:id} : Updates an existing tag.
      *
+     * @param id the id of the tag to save.
      * @param tag the tag to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tag,
      * or with status {@code 400 (Bad Request)} if the tag is not valid,
      * or with status {@code 500 (Internal Server Error)} if the tag couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/tags")
-    public Mono<ResponseEntity<Tag>> updateTag(@Valid @RequestBody Tag tag) throws URISyntaxException {
-        log.debug("REST request to update Tag : {}", tag);
+    @PutMapping("/tags/{id}")
+    public Mono<ResponseEntity<Tag>> updateTag(@PathVariable(value = "id", required = false) final String id, @Valid @RequestBody Tag tag)
+        throws URISyntaxException {
+        log.debug("REST request to update Tag : {}, {}", id, tag);
         if (tag.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, tag.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
         return tagRepository
-            .save(tag)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-            .map(
-                result ->
-                    ResponseEntity
-                        .ok()
-                        .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId()))
-                        .body(result)
+            .existsById(id)
+            .flatMap(
+                exists -> {
+                    if (!exists) {
+                        return Mono.error(new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+                    }
+
+                    return tagRepository
+                        .save(tag)
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .map(
+                            result ->
+                                ResponseEntity
+                                    .ok()
+                                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId()))
+                                    .body(result)
+                        );
+                }
             );
     }
 
     /**
-     * {@code PATCH  /tags} : Updates given fields of an existing tag.
+     * {@code PATCH  /tags/:id} : Partial updates given fields of an existing tag, field will ignore if it is null
      *
+     * @param id the id of the tag to save.
      * @param tag the tag to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tag,
      * or with status {@code 400 (Bad Request)} if the tag is not valid,
@@ -116,34 +134,50 @@ public class TagResource {
      * or with status {@code 500 (Internal Server Error)} if the tag couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/tags", consumes = "application/merge-patch+json")
-    public Mono<ResponseEntity<Tag>> partialUpdateTag(@NotNull @RequestBody Tag tag) throws URISyntaxException {
-        log.debug("REST request to update Tag partially : {}", tag);
+    @PatchMapping(value = "/tags/{id}", consumes = "application/merge-patch+json")
+    public Mono<ResponseEntity<Tag>> partialUpdateTag(
+        @PathVariable(value = "id", required = false) final String id,
+        @NotNull @RequestBody Tag tag
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Tag partially : {}, {}", id, tag);
         if (tag.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, tag.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
 
-        Mono<Tag> result = tagRepository
-            .findById(tag.getId())
-            .map(
-                existingTag -> {
-                    if (tag.getName() != null) {
-                        existingTag.setName(tag.getName());
+        return tagRepository
+            .existsById(id)
+            .flatMap(
+                exists -> {
+                    if (!exists) {
+                        return Mono.error(new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
                     }
 
-                    return existingTag;
-                }
-            )
-            .flatMap(tagRepository::save);
+                    Mono<Tag> result = tagRepository
+                        .findById(tag.getId())
+                        .map(
+                            existingTag -> {
+                                if (tag.getName() != null) {
+                                    existingTag.setName(tag.getName());
+                                }
 
-        return result
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-            .map(
-                res ->
-                    ResponseEntity
-                        .ok()
-                        .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId()))
-                        .body(res)
+                                return existingTag;
+                            }
+                        )
+                        .flatMap(tagRepository::save);
+
+                    return result
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .map(
+                            res ->
+                                ResponseEntity
+                                    .ok()
+                                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId()))
+                                    .body(res)
+                        );
+                }
             );
     }
 

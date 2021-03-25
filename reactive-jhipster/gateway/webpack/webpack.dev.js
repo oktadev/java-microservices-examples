@@ -1,14 +1,17 @@
 'use strict';
-const utils = require('./vue.utils');
-const webpack = require('webpack');
-const config = require('../config');
-const webpackMerge = require('webpack-merge').merge;
-const path = require('path');
-const baseWebpackConfig = require('./webpack.common');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 const portfinder = require('portfinder');
+const path = require('path');
+const webpack = require('webpack');
+const { merge: webpackMerge } = require('webpack-merge');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const utils = require('./vue.utils');
+const config = require('../config');
+const baseWebpackConfig = require('./webpack.common');
 const jhiUtils = require('./utils.js');
-const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+
 const HOST = process.env.HOST;
 const PORT = process.env.PORT && Number(process.env.PORT);
 
@@ -27,6 +30,9 @@ module.exports = webpackMerge(baseWebpackConfig, {
     path: jhiUtils.root('build/resources/main/static/'),
     filename: 'app/[name].bundle.js',
     chunkFilename: 'app/[id].chunk.js',
+  },
+  optimization: {
+    moduleIds: 'named',
   },
   devServer: {
     contentBase: './build/resources/main/static/',
@@ -60,8 +66,14 @@ module.exports = webpackMerge(baseWebpackConfig, {
       'process.env': require('../config/dev.env'),
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
+    new HtmlWebpackPlugin({
+      base: '/',
+      template: './src/main/webapp/index.html',
+      chunks: ['vendors', 'main', 'global'],
+      chunksSortMode: 'manual',
+      inject: true,
+    }),
     new BrowserSyncPlugin(
       {
         host: 'localhost',

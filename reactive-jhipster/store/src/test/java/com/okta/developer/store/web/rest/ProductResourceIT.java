@@ -12,6 +12,7 @@ import com.okta.developer.store.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ class ProductResourceIT {
     private static final byte[] UPDATED_IMAGE = TestUtil.createByteArray(1, "1");
     private static final String DEFAULT_IMAGE_CONTENT_TYPE = "image/jpg";
     private static final String UPDATED_IMAGE_CONTENT_TYPE = "image/png";
+
+    private static final String ENTITY_API_URL = "/api/products";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     @Autowired
     private ProductRepository productRepository;
@@ -95,7 +99,7 @@ class ProductResourceIT {
         // Create the Product
         webTestClient
             .post()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(product))
             .exchange()
@@ -122,7 +126,7 @@ class ProductResourceIT {
         // An entity with an existing ID cannot be created, so this API call must fail
         webTestClient
             .post()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(product))
             .exchange()
@@ -144,7 +148,7 @@ class ProductResourceIT {
 
         webTestClient
             .post()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(product))
             .exchange()
@@ -165,7 +169,7 @@ class ProductResourceIT {
 
         webTestClient
             .post()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(product))
             .exchange()
@@ -184,7 +188,7 @@ class ProductResourceIT {
         // Get all the productList
         webTestClient
             .get()
-            .uri("/api/products?sort=id,desc")
+            .uri(ENTITY_API_URL + "?sort=id,desc")
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -212,7 +216,7 @@ class ProductResourceIT {
         // Get the product
         webTestClient
             .get()
-            .uri("/api/products/{id}", product.getId())
+            .uri(ENTITY_API_URL_ID, product.getId())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -237,7 +241,7 @@ class ProductResourceIT {
         // Get the product
         webTestClient
             .get()
-            .uri("/api/products/{id}", Long.MAX_VALUE)
+            .uri(ENTITY_API_URL_ID, Long.MAX_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -245,7 +249,7 @@ class ProductResourceIT {
     }
 
     @Test
-    void updateProduct() throws Exception {
+    void putNewProduct() throws Exception {
         // Initialize the database
         productRepository.save(product).block();
 
@@ -257,7 +261,7 @@ class ProductResourceIT {
 
         webTestClient
             .put()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL_ID, updatedProduct.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(updatedProduct))
             .exchange()
@@ -275,18 +279,59 @@ class ProductResourceIT {
     }
 
     @Test
-    void updateNonExistingProduct() throws Exception {
+    void putNonExistingProduct() throws Exception {
         int databaseSizeBeforeUpdate = productRepository.findAll().collectList().block().size();
+        product.setId(UUID.randomUUID().toString());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         webTestClient
             .put()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL_ID, product.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(product))
             .exchange()
             .expectStatus()
             .isBadRequest();
+
+        // Validate the Product in the database
+        List<Product> productList = productRepository.findAll().collectList().block();
+        assertThat(productList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithIdMismatchProduct() throws Exception {
+        int databaseSizeBeforeUpdate = productRepository.findAll().collectList().block().size();
+        product.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL_ID, UUID.randomUUID().toString())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(product))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the Product in the database
+        List<Product> productList = productRepository.findAll().collectList().block();
+        assertThat(productList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithMissingIdPathParamProduct() throws Exception {
+        int databaseSizeBeforeUpdate = productRepository.findAll().collectList().block().size();
+        product.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(product))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
 
         // Validate the Product in the database
         List<Product> productList = productRepository.findAll().collectList().block();
@@ -308,7 +353,7 @@ class ProductResourceIT {
 
         webTestClient
             .patch()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL_ID, partialUpdatedProduct.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
             .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedProduct))
             .exchange()
@@ -340,7 +385,7 @@ class ProductResourceIT {
 
         webTestClient
             .patch()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL_ID, partialUpdatedProduct.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
             .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedProduct))
             .exchange()
@@ -358,18 +403,63 @@ class ProductResourceIT {
     }
 
     @Test
-    void partialUpdateProductShouldThrown() throws Exception {
-        // Update the product without id should throw
-        Product partialUpdatedProduct = new Product();
+    void patchNonExistingProduct() throws Exception {
+        int databaseSizeBeforeUpdate = productRepository.findAll().collectList().block().size();
+        product.setId(UUID.randomUUID().toString());
 
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
         webTestClient
             .patch()
-            .uri("/api/products")
+            .uri(ENTITY_API_URL_ID, product.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
-            .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedProduct))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(product))
             .exchange()
             .expectStatus()
             .isBadRequest();
+
+        // Validate the Product in the database
+        List<Product> productList = productRepository.findAll().collectList().block();
+        assertThat(productList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithIdMismatchProduct() throws Exception {
+        int databaseSizeBeforeUpdate = productRepository.findAll().collectList().block().size();
+        product.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL_ID, UUID.randomUUID().toString())
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(product))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the Product in the database
+        List<Product> productList = productRepository.findAll().collectList().block();
+        assertThat(productList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithMissingIdPathParamProduct() throws Exception {
+        int databaseSizeBeforeUpdate = productRepository.findAll().collectList().block().size();
+        product.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(product))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
+
+        // Validate the Product in the database
+        List<Product> productList = productRepository.findAll().collectList().block();
+        assertThat(productList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -382,7 +472,7 @@ class ProductResourceIT {
         // Delete the product
         webTestClient
             .delete()
-            .uri("/api/products/{id}", product.getId())
+            .uri(ENTITY_API_URL_ID, product.getId())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()

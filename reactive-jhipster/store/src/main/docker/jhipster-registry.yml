@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   jhipster-registry:
-    image: jhipster/jhipster-registry:v6.6.0
+    image: jhipster/jhipster-registry:v6.7.1
     volumes:
       - ./central-server-config:/central-config
     # When run with the "dev" Spring profile, the JHipster Registry will

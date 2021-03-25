@@ -5,6 +5,8 @@ import static org.springframework.security.oauth2.core.oidc.endpoint.OidcParamet
 
 import java.time.Instant;
 import java.util.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,16 +51,20 @@ class SecurityUtilsUnitTest {
     }
 
     @Test
-    void testIsCurrentUserInRole() {
+    void testHasCurrentUserThisAuthority() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.USER));
         Context context = ReactiveSecurityContextHolder.withAuthentication(
             new UsernamePasswordAuthenticationToken("admin", "admin", authorities)
         );
-        Boolean isCurrentUserInRole = SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.USER).subscriberContext(context).block();
-        assertThat(isCurrentUserInRole).isTrue();
+        Boolean hasCurrentUserThisAuthority = SecurityUtils
+            .hasCurrentUserThisAuthority(AuthoritiesConstants.USER)
+            .subscriberContext(context)
+            .block();
+        assertThat(hasCurrentUserThisAuthority).isTrue();
 
-        isCurrentUserInRole = SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN).subscriberContext(context).block();
-        assertThat(isCurrentUserInRole).isFalse();
+        hasCurrentUserThisAuthority =
+            SecurityUtils.hasCurrentUserThisAuthority(AuthoritiesConstants.ADMIN).subscriberContext(context).block();
+        assertThat(hasCurrentUserThisAuthority).isFalse();
     }
 }

@@ -1,5 +1,5 @@
 import Vuex from 'vuex';
-import VueI18n from 'vue-i18n';
+import VueI18n, { DateTimeFormats } from 'vue-i18n';
 import JhiFormatter from './formatter';
 import { setupAxiosInterceptors } from '@/shared/config/axios-interceptor';
 
@@ -50,7 +50,7 @@ import * as filters from '@/shared/date/filters';
 import { accountStore } from '@/shared/config/store/account-store';
 import { translationStore } from '@/shared/config/store/translation-store';
 
-const dateTimeFormats = {
+const dateTimeFormats: DateTimeFormats = {
   en: {
     short: {
       year: 'numeric',

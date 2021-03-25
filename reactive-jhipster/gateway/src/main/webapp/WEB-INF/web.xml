@@ -5,9 +5,9 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
     version="3.0">
 
-     <mime-mapping>
+    <mime-mapping>
         <extension>html</extension>
         <mime-type>text/html;charset=utf-8</mime-type>
     </mime-mapping>
 
- </web-app>
+</web-app>

@@ -11,6 +11,7 @@ import com.okta.developer.blog.repository.BlogRepository;
 import com.okta.developer.blog.repository.UserRepository;
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,9 @@ class BlogResourceIT {
 
     private static final String DEFAULT_HANDLE = "AAAAAAAAAA";
     private static final String UPDATED_HANDLE = "BBBBBBBBBB";
+
+    private static final String ENTITY_API_URL = "/api/blogs";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     @Autowired
     private BlogRepository blogRepository;
@@ -86,7 +90,7 @@ class BlogResourceIT {
         // Create the Blog
         webTestClient
             .post()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
             .exchange()
@@ -111,7 +115,7 @@ class BlogResourceIT {
         // An entity with an existing ID cannot be created, so this API call must fail
         webTestClient
             .post()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
             .exchange()
@@ -133,7 +137,7 @@ class BlogResourceIT {
 
         webTestClient
             .post()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
             .exchange()
@@ -154,7 +158,7 @@ class BlogResourceIT {
 
         webTestClient
             .post()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
             .exchange()
@@ -172,13 +176,13 @@ class BlogResourceIT {
 
         List<Blog> blogList = webTestClient
             .get()
-            .uri("/api/blogs")
-            .accept(MediaType.APPLICATION_STREAM_JSON)
+            .uri(ENTITY_API_URL)
+            .accept(MediaType.APPLICATION_NDJSON)
             .exchange()
             .expectStatus()
             .isOk()
             .expectHeader()
-            .contentTypeCompatibleWith(MediaType.APPLICATION_STREAM_JSON)
+            .contentTypeCompatibleWith(MediaType.APPLICATION_NDJSON)
             .returnResult(Blog.class)
             .getResponseBody()
             .filter(blog::equals)
@@ -200,7 +204,7 @@ class BlogResourceIT {
         // Get all the blogList
         webTestClient
             .get()
-            .uri("/api/blogs?sort=id,desc")
+            .uri(ENTITY_API_URL + "?sort=id,desc")
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -222,7 +226,7 @@ class BlogResourceIT {
         // Get the blog
         webTestClient
             .get()
-            .uri("/api/blogs/{id}", blog.getId())
+            .uri(ENTITY_API_URL_ID, blog.getId())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -241,7 +245,7 @@ class BlogResourceIT {
         // Get the blog
         webTestClient
             .get()
-            .uri("/api/blogs/{id}", Long.MAX_VALUE)
+            .uri(ENTITY_API_URL_ID, Long.MAX_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -249,7 +253,7 @@ class BlogResourceIT {
     }
 
     @Test
-    void updateBlog() throws Exception {
+    void putNewBlog() throws Exception {
         // Initialize the database
         blogRepository.save(blog).block();
 
@@ -261,7 +265,7 @@ class BlogResourceIT {
 
         webTestClient
             .put()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL_ID, updatedBlog.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(updatedBlog))
             .exchange()
@@ -277,18 +281,59 @@ class BlogResourceIT {
     }
 
     @Test
-    void updateNonExistingBlog() throws Exception {
+    void putNonExistingBlog() throws Exception {
         int databaseSizeBeforeUpdate = blogRepository.findAll().collectList().block().size();
+        blog.setId(UUID.randomUUID().toString());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         webTestClient
             .put()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL_ID, blog.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
             .exchange()
             .expectStatus()
             .isBadRequest();
+
+        // Validate the Blog in the database
+        List<Blog> blogList = blogRepository.findAll().collectList().block();
+        assertThat(blogList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithIdMismatchBlog() throws Exception {
+        int databaseSizeBeforeUpdate = blogRepository.findAll().collectList().block().size();
+        blog.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL_ID, UUID.randomUUID().toString())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the Blog in the database
+        List<Blog> blogList = blogRepository.findAll().collectList().block();
+        assertThat(blogList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithMissingIdPathParamBlog() throws Exception {
+        int databaseSizeBeforeUpdate = blogRepository.findAll().collectList().block().size();
+        blog.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
 
         // Validate the Blog in the database
         List<Blog> blogList = blogRepository.findAll().collectList().block();
@@ -310,7 +355,7 @@ class BlogResourceIT {
 
         webTestClient
             .patch()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL_ID, partialUpdatedBlog.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
             .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedBlog))
             .exchange()
@@ -340,7 +385,7 @@ class BlogResourceIT {
 
         webTestClient
             .patch()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL_ID, partialUpdatedBlog.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
             .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedBlog))
             .exchange()
@@ -356,18 +401,63 @@ class BlogResourceIT {
     }
 
     @Test
-    void partialUpdateBlogShouldThrown() throws Exception {
-        // Update the blog without id should throw
-        Blog partialUpdatedBlog = new Blog();
+    void patchNonExistingBlog() throws Exception {
+        int databaseSizeBeforeUpdate = blogRepository.findAll().collectList().block().size();
+        blog.setId(UUID.randomUUID().toString());
 
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
         webTestClient
             .patch()
-            .uri("/api/blogs")
+            .uri(ENTITY_API_URL_ID, blog.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
-            .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedBlog))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
             .exchange()
             .expectStatus()
             .isBadRequest();
+
+        // Validate the Blog in the database
+        List<Blog> blogList = blogRepository.findAll().collectList().block();
+        assertThat(blogList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithIdMismatchBlog() throws Exception {
+        int databaseSizeBeforeUpdate = blogRepository.findAll().collectList().block().size();
+        blog.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL_ID, UUID.randomUUID().toString())
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the Blog in the database
+        List<Blog> blogList = blogRepository.findAll().collectList().block();
+        assertThat(blogList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithMissingIdPathParamBlog() throws Exception {
+        int databaseSizeBeforeUpdate = blogRepository.findAll().collectList().block().size();
+        blog.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(blog))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
+
+        // Validate the Blog in the database
+        List<Blog> blogList = blogRepository.findAll().collectList().block();
+        assertThat(blogList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -380,7 +470,7 @@ class BlogResourceIT {
         // Delete the blog
         webTestClient
             .delete()
-            .uri("/api/blogs/{id}", blog.getId())
+            .uri(ENTITY_API_URL_ID, blog.getId())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()

@@ -10,6 +10,7 @@ import com.okta.developer.blog.domain.Tag;
 import com.okta.developer.blog.repository.TagRepository;
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,9 @@ class TagResourceIT {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
+
+    private static final String ENTITY_API_URL = "/api/tags";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     @Autowired
     private TagRepository tagRepository;
@@ -79,7 +83,7 @@ class TagResourceIT {
         // Create the Tag
         webTestClient
             .post()
-            .uri("/api/tags")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
             .exchange()
@@ -103,7 +107,7 @@ class TagResourceIT {
         // An entity with an existing ID cannot be created, so this API call must fail
         webTestClient
             .post()
-            .uri("/api/tags")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
             .exchange()
@@ -125,7 +129,7 @@ class TagResourceIT {
 
         webTestClient
             .post()
-            .uri("/api/tags")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
             .exchange()
@@ -144,7 +148,7 @@ class TagResourceIT {
         // Get all the tagList
         webTestClient
             .get()
-            .uri("/api/tags?sort=id,desc")
+            .uri(ENTITY_API_URL + "?sort=id,desc")
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -164,7 +168,7 @@ class TagResourceIT {
         // Get the tag
         webTestClient
             .get()
-            .uri("/api/tags/{id}", tag.getId())
+            .uri(ENTITY_API_URL_ID, tag.getId())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -179,11 +183,17 @@ class TagResourceIT {
     @Test
     void getNonExistingTag() {
         // Get the tag
-        webTestClient.get().uri("/api/tags/{id}", Long.MAX_VALUE).accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNotFound();
+        webTestClient
+            .get()
+            .uri(ENTITY_API_URL_ID, Long.MAX_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus()
+            .isNotFound();
     }
 
     @Test
-    void updateTag() throws Exception {
+    void putNewTag() throws Exception {
         // Initialize the database
         tagRepository.save(tag).block();
 
@@ -195,7 +205,7 @@ class TagResourceIT {
 
         webTestClient
             .put()
-            .uri("/api/tags")
+            .uri(ENTITY_API_URL_ID, updatedTag.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(updatedTag))
             .exchange()
@@ -210,18 +220,59 @@ class TagResourceIT {
     }
 
     @Test
-    void updateNonExistingTag() throws Exception {
+    void putNonExistingTag() throws Exception {
         int databaseSizeBeforeUpdate = tagRepository.findAll().collectList().block().size();
+        tag.setId(UUID.randomUUID().toString());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         webTestClient
             .put()
-            .uri("/api/tags")
+            .uri(ENTITY_API_URL_ID, tag.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
             .exchange()
             .expectStatus()
             .isBadRequest();
+
+        // Validate the Tag in the database
+        List<Tag> tagList = tagRepository.findAll().collectList().block();
+        assertThat(tagList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithIdMismatchTag() throws Exception {
+        int databaseSizeBeforeUpdate = tagRepository.findAll().collectList().block().size();
+        tag.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL_ID, UUID.randomUUID().toString())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the Tag in the database
+        List<Tag> tagList = tagRepository.findAll().collectList().block();
+        assertThat(tagList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithMissingIdPathParamTag() throws Exception {
+        int databaseSizeBeforeUpdate = tagRepository.findAll().collectList().block().size();
+        tag.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
 
         // Validate the Tag in the database
         List<Tag> tagList = tagRepository.findAll().collectList().block();
@@ -243,7 +294,7 @@ class TagResourceIT {
 
         webTestClient
             .patch()
-            .uri("/api/tags")
+            .uri(ENTITY_API_URL_ID, partialUpdatedTag.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
             .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedTag))
             .exchange()
@@ -272,7 +323,7 @@ class TagResourceIT {
 
         webTestClient
             .patch()
-            .uri("/api/tags")
+            .uri(ENTITY_API_URL_ID, partialUpdatedTag.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
             .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedTag))
             .exchange()
@@ -287,18 +338,63 @@ class TagResourceIT {
     }
 
     @Test
-    void partialUpdateTagShouldThrown() throws Exception {
-        // Update the tag without id should throw
-        Tag partialUpdatedTag = new Tag();
+    void patchNonExistingTag() throws Exception {
+        int databaseSizeBeforeUpdate = tagRepository.findAll().collectList().block().size();
+        tag.setId(UUID.randomUUID().toString());
 
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
         webTestClient
             .patch()
-            .uri("/api/tags")
+            .uri(ENTITY_API_URL_ID, tag.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
-            .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedTag))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
             .exchange()
             .expectStatus()
             .isBadRequest();
+
+        // Validate the Tag in the database
+        List<Tag> tagList = tagRepository.findAll().collectList().block();
+        assertThat(tagList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithIdMismatchTag() throws Exception {
+        int databaseSizeBeforeUpdate = tagRepository.findAll().collectList().block().size();
+        tag.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL_ID, UUID.randomUUID().toString())
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the Tag in the database
+        List<Tag> tagList = tagRepository.findAll().collectList().block();
+        assertThat(tagList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithMissingIdPathParamTag() throws Exception {
+        int databaseSizeBeforeUpdate = tagRepository.findAll().collectList().block().size();
+        tag.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(tag))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
+
+        // Validate the Tag in the database
+        List<Tag> tagList = tagRepository.findAll().collectList().block();
+        assertThat(tagList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -311,7 +407,7 @@ class TagResourceIT {
         // Delete the tag
         webTestClient
             .delete()
-            .uri("/api/tags/{id}", tag.getId())
+            .uri(ENTITY_API_URL_ID, tag.getId())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()

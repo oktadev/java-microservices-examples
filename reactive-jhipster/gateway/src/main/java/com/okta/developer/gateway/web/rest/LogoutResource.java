@@ -28,6 +28,7 @@ public class LogoutResource {
      * {@code POST  /api/logout} : logout the current user.
      *
      * @param idToken the ID token.
+     * @param session the current {@link WebSession}.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and a body with a global logout URL and ID token.
      */
     @PostMapping("/api/logout")

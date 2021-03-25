@@ -30,25 +30,11 @@ eureka:
 
 org:
   neo4j:
-    driver:
-      pool:
-        metrics-enabled: true
-      uri: bolt://localhost:7687
-      # Uncomment to use an authenticated connection
-      # authentication:
-      #   username: neo4j
-      #   password: secret
     migrations:
       locations-to-scan:
       packages-to-scan: com.okta.developer.blog.config.neo4j
       installed-by: blog
 spring:
-  profiles:
-    active: dev
-    include:
-      - api-docs
-      # Uncomment to activate TLS for the dev profile
-      #- tls
   devtools:
     restart:
       enabled: true
@@ -58,11 +44,22 @@ spring:
   jackson:
     serialization:
       indent-output: true
-  mail:
-    host: localhost
-    port: 25
-    username:
-    password:
+  neo4j:
+    pool:
+      metrics-enabled: true
+    uri: bolt://localhost:7687
+    # Uncomment to use an authenticated connection
+    # authentication:
+    #   username: neo4j
+    #   password: secret
+  cloud:
+    config:
+      uri: http://admin:${jhipster.registry.password}@localhost:8761/config
+      # name of the config server's property source (file.yml) that we want to use
+      name: blog
+      profile: dev
+      label: main # toggle to switch to a different version of the configuration as stored in git
+      # it can be set to any label, branch or commit of the configuration source Git repository
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:
@@ -87,6 +84,8 @@ server:
 # ===================================================================
 
 jhipster:
+  registry:
+    password: admin
   # CORS is disabled by default on microservices, as you should access them through a gateway.
   # If you want to enable it, please uncomment the configuration below.
   # cors:
@@ -96,8 +95,6 @@ jhipster:
   #   exposed-headers: "Authorization,Link,X-Total-Count"
   #   allow-credentials: true
   #   max-age: 1800
-  mail: # specific JHipster mail property, for standard properties see MailProperties
-    base-url: http://127.0.0.1:8081
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration

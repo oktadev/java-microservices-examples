@@ -64,14 +64,12 @@ public final class SecurityUtils {
     }
 
     /**
-     * If the current user has a specific authority (security role).
-     * <p>
-     * The name of this method comes from the {@code isUserInRole()} method in the Servlet API.
+     * Checks if the current user has a specific authority.
      *
      * @param authority the authority to check.
      * @return true if the current user has the authority, false otherwise.
      */
-    public static Mono<Boolean> isCurrentUserInRole(String authority) {
+    public static Mono<Boolean> hasCurrentUserThisAuthority(String authority) {
         return ReactiveSecurityContextHolder
             .getContext()
             .map(SecurityContext::getAuthentication)

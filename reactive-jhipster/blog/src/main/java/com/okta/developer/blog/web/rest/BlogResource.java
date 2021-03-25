@@ -7,6 +7,7 @@ import com.okta.developer.blog.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -80,39 +81,58 @@ public class BlogResource {
     }
 
     /**
-     * {@code PUT  /blogs} : Updates an existing blog.
+     * {@code PUT  /blogs/:id} : Updates an existing blog.
      *
+     * @param id the id of the blog to save.
      * @param blog the blog to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated blog,
      * or with status {@code 400 (Bad Request)} if the blog is not valid,
      * or with status {@code 500 (Internal Server Error)} if the blog couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/blogs")
-    public Mono<ResponseEntity<Blog>> updateBlog(@Valid @RequestBody Blog blog) throws URISyntaxException {
-        log.debug("REST request to update Blog : {}", blog);
+    @PutMapping("/blogs/{id}")
+    public Mono<ResponseEntity<Blog>> updateBlog(
+        @PathVariable(value = "id", required = false) final String id,
+        @Valid @RequestBody Blog blog
+    ) throws URISyntaxException {
+        log.debug("REST request to update Blog : {}, {}", id, blog);
         if (blog.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (blog.getUser() != null) {
-            // Save user in case it's new and only exists in gateway
-            userRepository.save(blog.getUser());
+        if (!Objects.equals(id, blog.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
+
         return blogRepository
-            .save(blog)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-            .map(
-                result ->
-                    ResponseEntity
-                        .ok()
-                        .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId()))
-                        .body(result)
+            .existsById(id)
+            .flatMap(
+                exists -> {
+                    if (!exists) {
+                        return Mono.error(new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+                    }
+
+                    if (blog.getUser() != null) {
+                        // Save user in case it's new and only exists in gateway
+                        userRepository.save(blog.getUser());
+                    }
+                    return blogRepository
+                        .save(blog)
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .map(
+                            result ->
+                                ResponseEntity
+                                    .ok()
+                                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId()))
+                                    .body(result)
+                        );
+                }
             );
     }
 
     /**
-     * {@code PATCH  /blogs} : Updates given fields of an existing blog.
+     * {@code PATCH  /blogs/:id} : Partial updates given fields of an existing blog, field will ignore if it is null
      *
+     * @param id the id of the blog to save.
      * @param blog the blog to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated blog,
      * or with status {@code 400 (Bad Request)} if the blog is not valid,
@@ -120,42 +140,58 @@ public class BlogResource {
      * or with status {@code 500 (Internal Server Error)} if the blog couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/blogs", consumes = "application/merge-patch+json")
-    public Mono<ResponseEntity<Blog>> partialUpdateBlog(@NotNull @RequestBody Blog blog) throws URISyntaxException {
-        log.debug("REST request to update Blog partially : {}", blog);
+    @PatchMapping(value = "/blogs/{id}", consumes = "application/merge-patch+json")
+    public Mono<ResponseEntity<Blog>> partialUpdateBlog(
+        @PathVariable(value = "id", required = false) final String id,
+        @NotNull @RequestBody Blog blog
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Blog partially : {}, {}", id, blog);
         if (blog.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (blog.getUser() != null) {
-            // Save user in case it's new and only exists in gateway
-            userRepository.save(blog.getUser());
+        if (!Objects.equals(id, blog.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        Mono<Blog> result = blogRepository
-            .findById(blog.getId())
-            .map(
-                existingBlog -> {
-                    if (blog.getName() != null) {
-                        existingBlog.setName(blog.getName());
+        return blogRepository
+            .existsById(id)
+            .flatMap(
+                exists -> {
+                    if (!exists) {
+                        return Mono.error(new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
                     }
 
-                    if (blog.getHandle() != null) {
-                        existingBlog.setHandle(blog.getHandle());
+                    if (blog.getUser() != null) {
+                        // Save user in case it's new and only exists in gateway
+                        userRepository.save(blog.getUser());
                     }
 
-                    return existingBlog;
+                    Mono<Blog> result = blogRepository
+                        .findById(blog.getId())
+                        .map(
+                            existingBlog -> {
+                                if (blog.getName() != null) {
+                                    existingBlog.setName(blog.getName());
+                                }
+                                if (blog.getHandle() != null) {
+                                    existingBlog.setHandle(blog.getHandle());
+                                }
+
+                                return existingBlog;
+                            }
+                        )
+                        .flatMap(blogRepository::save);
+
+                    return result
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .map(
+                            res ->
+                                ResponseEntity
+                                    .ok()
+                                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId()))
+                                    .body(res)
+                        );
                 }
-            )
-            .flatMap(blogRepository::save);
-
-        return result
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-            .map(
-                res ->
-                    ResponseEntity
-                        .ok()
-                        .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId()))
-                        .body(res)
             );
     }
 
@@ -174,7 +210,7 @@ public class BlogResource {
      * {@code GET  /blogs} : get all the blogs as a stream.
      * @return the {@link Flux} of blogs.
      */
-    @GetMapping(value = "/blogs", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+    @GetMapping(value = "/blogs", produces = MediaType.APPLICATION_NDJSON_VALUE)
     public Flux<Blog> getAllBlogsAsStream() {
         log.debug("REST request to get all Blogs as a stream");
         return blogRepository.findAll();

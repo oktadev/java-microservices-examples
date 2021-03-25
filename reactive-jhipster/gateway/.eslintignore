@@ -1,6 +1,6 @@
 node_modules/
 src/main/docker/
-src/test/javascript/protractor.conf.js
+src/test/javascript/cypress/
 src/test/javascript/jest.conf.js
 webpack/
 target/
