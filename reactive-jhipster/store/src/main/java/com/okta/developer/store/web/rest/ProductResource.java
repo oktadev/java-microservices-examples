@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -80,35 +81,54 @@ public class ProductResource {
     }
 
     /**
-     * {@code PUT  /products} : Updates an existing product.
+     * {@code PUT  /products/:id} : Updates an existing product.
      *
+     * @param id the id of the product to save.
      * @param product the product to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated product,
      * or with status {@code 400 (Bad Request)} if the product is not valid,
      * or with status {@code 500 (Internal Server Error)} if the product couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/products")
-    public Mono<ResponseEntity<Product>> updateProduct(@Valid @RequestBody Product product) throws URISyntaxException {
-        log.debug("REST request to update Product : {}", product);
+    @PutMapping("/products/{id}")
+    public Mono<ResponseEntity<Product>> updateProduct(
+        @PathVariable(value = "id", required = false) final String id,
+        @Valid @RequestBody Product product
+    ) throws URISyntaxException {
+        log.debug("REST request to update Product : {}, {}", id, product);
         if (product.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, product.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
         return productRepository
-            .save(product)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-            .map(
-                result ->
-                    ResponseEntity
-                        .ok()
-                        .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId()))
-                        .body(result)
+            .existsById(id)
+            .flatMap(
+                exists -> {
+                    if (!exists) {
+                        return Mono.error(new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+                    }
+
+                    return productRepository
+                        .save(product)
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .map(
+                            result ->
+                                ResponseEntity
+                                    .ok()
+                                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId()))
+                                    .body(result)
+                        );
+                }
             );
     }
 
     /**
-     * {@code PATCH  /products} : Updates given fields of an existing product.
+     * {@code PATCH  /products/:id} : Partial updates given fields of an existing product, field will ignore if it is null
      *
+     * @param id the id of the product to save.
      * @param product the product to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated product,
      * or with status {@code 400 (Bad Request)} if the product is not valid,
@@ -116,45 +136,59 @@ public class ProductResource {
      * or with status {@code 500 (Internal Server Error)} if the product couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/products", consumes = "application/merge-patch+json")
-    public Mono<ResponseEntity<Product>> partialUpdateProduct(@NotNull @RequestBody Product product) throws URISyntaxException {
-        log.debug("REST request to update Product partially : {}", product);
+    @PatchMapping(value = "/products/{id}", consumes = "application/merge-patch+json")
+    public Mono<ResponseEntity<Product>> partialUpdateProduct(
+        @PathVariable(value = "id", required = false) final String id,
+        @NotNull @RequestBody Product product
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Product partially : {}, {}", id, product);
         if (product.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, product.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
 
-        Mono<Product> result = productRepository
-            .findById(product.getId())
-            .map(
-                existingProduct -> {
-                    if (product.getTitle() != null) {
-                        existingProduct.setTitle(product.getTitle());
+        return productRepository
+            .existsById(id)
+            .flatMap(
+                exists -> {
+                    if (!exists) {
+                        return Mono.error(new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
                     }
 
-                    if (product.getPrice() != null) {
-                        existingProduct.setPrice(product.getPrice());
-                    }
+                    Mono<Product> result = productRepository
+                        .findById(product.getId())
+                        .map(
+                            existingProduct -> {
+                                if (product.getTitle() != null) {
+                                    existingProduct.setTitle(product.getTitle());
+                                }
+                                if (product.getPrice() != null) {
+                                    existingProduct.setPrice(product.getPrice());
+                                }
+                                if (product.getImage() != null) {
+                                    existingProduct.setImage(product.getImage());
+                                }
+                                if (product.getImageContentType() != null) {
+                                    existingProduct.setImageContentType(product.getImageContentType());
+                                }
 
-                    if (product.getImage() != null) {
-                        existingProduct.setImage(product.getImage());
-                    }
-                    if (product.getImageContentType() != null) {
-                        existingProduct.setImageContentType(product.getImageContentType());
-                    }
+                                return existingProduct;
+                            }
+                        )
+                        .flatMap(productRepository::save);
 
-                    return existingProduct;
+                    return result
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .map(
+                            res ->
+                                ResponseEntity
+                                    .ok()
+                                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId()))
+                                    .body(res)
+                        );
                 }
-            )
-            .flatMap(productRepository::save);
-
-        return result
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-            .map(
-                res ->
-                    ResponseEntity
-                        .ok()
-                        .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId()))
-                        .body(res)
             );
     }
 

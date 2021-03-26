@@ -62,7 +62,20 @@ export default class PostService {
   public update(entity: IPost): Promise<IPost> {
     return new Promise<IPost>((resolve, reject) => {
       axios
-        .put(`${baseApiUrl}`, entity)
+        .put(`${baseApiUrl}/${entity.id}`, entity)
+        .then(res => {
+          resolve(res.data);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  public partialUpdate(entity: IPost): Promise<IPost> {
+    return new Promise<IPost>((resolve, reject) => {
+      axios
+        .patch(`${baseApiUrl}/${entity.id}`, entity)
         .then(res => {
           resolve(res.data);
         })

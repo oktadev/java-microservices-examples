@@ -47,5 +47,5 @@
   "microserviceName": "blog",
   "clientRootFolder": "blog",
   "databaseType": "sql",
-  "changelogDate": "20210117205841"
+  "changelogDate": "20210325055822"
 }

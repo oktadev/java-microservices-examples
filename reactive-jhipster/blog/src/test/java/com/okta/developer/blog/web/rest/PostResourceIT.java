@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +48,9 @@ class PostResourceIT {
 
     private static final Instant DEFAULT_DATE = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final String ENTITY_API_URL = "/api/posts";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     @Autowired
     private PostRepository postRepository;
@@ -98,7 +102,7 @@ class PostResourceIT {
         // Create the Post
         webTestClient
             .post()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(post))
             .exchange()
@@ -124,7 +128,7 @@ class PostResourceIT {
         // An entity with an existing ID cannot be created, so this API call must fail
         webTestClient
             .post()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(post))
             .exchange()
@@ -146,7 +150,7 @@ class PostResourceIT {
 
         webTestClient
             .post()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(post))
             .exchange()
@@ -167,7 +171,7 @@ class PostResourceIT {
 
         webTestClient
             .post()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(post))
             .exchange()
@@ -186,7 +190,7 @@ class PostResourceIT {
         // Get all the postList
         webTestClient
             .get()
-            .uri("/api/posts?sort=id,desc")
+            .uri(ENTITY_API_URL + "?sort=id,desc")
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -210,7 +214,7 @@ class PostResourceIT {
         // Get the post
         webTestClient
             .get()
-            .uri("/api/posts/{id}", post.getId())
+            .uri(ENTITY_API_URL_ID, post.getId())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -231,7 +235,7 @@ class PostResourceIT {
         // Get the post
         webTestClient
             .get()
-            .uri("/api/posts/{id}", Long.MAX_VALUE)
+            .uri(ENTITY_API_URL_ID, Long.MAX_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -239,7 +243,7 @@ class PostResourceIT {
     }
 
     @Test
-    void updatePost() throws Exception {
+    void putNewPost() throws Exception {
         // Initialize the database
         postRepository.save(post).block();
 
@@ -251,7 +255,7 @@ class PostResourceIT {
 
         webTestClient
             .put()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL_ID, updatedPost.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(updatedPost))
             .exchange()
@@ -268,18 +272,59 @@ class PostResourceIT {
     }
 
     @Test
-    void updateNonExistingPost() throws Exception {
+    void putNonExistingPost() throws Exception {
         int databaseSizeBeforeUpdate = postRepository.findAll().collectList().block().size();
+        post.setId(UUID.randomUUID().toString());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         webTestClient
             .put()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL_ID, post.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(TestUtil.convertObjectToJsonBytes(post))
             .exchange()
             .expectStatus()
             .isBadRequest();
+
+        // Validate the Post in the database
+        List<Post> postList = postRepository.findAll().collectList().block();
+        assertThat(postList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithIdMismatchPost() throws Exception {
+        int databaseSizeBeforeUpdate = postRepository.findAll().collectList().block().size();
+        post.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL_ID, UUID.randomUUID().toString())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(post))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the Post in the database
+        List<Post> postList = postRepository.findAll().collectList().block();
+        assertThat(postList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void putWithMissingIdPathParamPost() throws Exception {
+        int databaseSizeBeforeUpdate = postRepository.findAll().collectList().block().size();
+        post.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .put()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(TestUtil.convertObjectToJsonBytes(post))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
 
         // Validate the Post in the database
         List<Post> postList = postRepository.findAll().collectList().block();
@@ -301,7 +346,7 @@ class PostResourceIT {
 
         webTestClient
             .patch()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL_ID, partialUpdatedPost.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
             .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedPost))
             .exchange()
@@ -332,7 +377,7 @@ class PostResourceIT {
 
         webTestClient
             .patch()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL_ID, partialUpdatedPost.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
             .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedPost))
             .exchange()
@@ -349,18 +394,63 @@ class PostResourceIT {
     }
 
     @Test
-    void partialUpdatePostShouldThrown() throws Exception {
-        // Update the post without id should throw
-        Post partialUpdatedPost = new Post();
+    void patchNonExistingPost() throws Exception {
+        int databaseSizeBeforeUpdate = postRepository.findAll().collectList().block().size();
+        post.setId(UUID.randomUUID().toString());
 
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
         webTestClient
             .patch()
-            .uri("/api/posts")
+            .uri(ENTITY_API_URL_ID, post.getId())
             .contentType(MediaType.valueOf("application/merge-patch+json"))
-            .bodyValue(TestUtil.convertObjectToJsonBytes(partialUpdatedPost))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(post))
             .exchange()
             .expectStatus()
             .isBadRequest();
+
+        // Validate the Post in the database
+        List<Post> postList = postRepository.findAll().collectList().block();
+        assertThat(postList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithIdMismatchPost() throws Exception {
+        int databaseSizeBeforeUpdate = postRepository.findAll().collectList().block().size();
+        post.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL_ID, UUID.randomUUID().toString())
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(post))
+            .exchange()
+            .expectStatus()
+            .isBadRequest();
+
+        // Validate the Post in the database
+        List<Post> postList = postRepository.findAll().collectList().block();
+        assertThat(postList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    void patchWithMissingIdPathParamPost() throws Exception {
+        int databaseSizeBeforeUpdate = postRepository.findAll().collectList().block().size();
+        post.setId(UUID.randomUUID().toString());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        webTestClient
+            .patch()
+            .uri(ENTITY_API_URL)
+            .contentType(MediaType.valueOf("application/merge-patch+json"))
+            .bodyValue(TestUtil.convertObjectToJsonBytes(post))
+            .exchange()
+            .expectStatus()
+            .isEqualTo(405);
+
+        // Validate the Post in the database
+        List<Post> postList = postRepository.findAll().collectList().block();
+        assertThat(postList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -373,7 +463,7 @@ class PostResourceIT {
         // Delete the post
         webTestClient
             .delete()
-            .uri("/api/posts/{id}", post.getId())
+            .uri(ENTITY_API_URL_ID, post.getId())
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()

@@ -9,15 +9,15 @@ services:
       - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
       - SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config
-      - ORG_NEO4J_DRIVER_URI=bolt://blog-neo4j:7687
+      - SPRING_NEO4J_URI=bolt://blog-neo4j:7687
       - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_OIDC_ISSUER_URI=http://keycloak:9080/auth/realms/jhipster
       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_ID=internal
       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET=internal
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
   blog-neo4j:
-    image: neo4j:4.2.2
+    image: neo4j:4.2.3
     # volumes:
-    #     - ~/volumes/jhipster/blog/neo4j/:/data
+    #   - ~/volumes/jhipster/blog/neo4j/:/data
     environment:
       - NEO4J_AUTH=none
     # If you want to expose these ports outside your dev PC,
@@ -26,7 +26,7 @@ services:
       - '127.0.0.1:7474:7474'
       - '127.0.0.1:7687:7687'
   jhipster-registry:
-    image: jhipster/jhipster-registry:v6.6.0
+    image: jhipster/jhipster-registry:v6.7.1
     volumes:
       - ./central-server-config:/central-config
     # When run with the "dev" Spring profile, the JHipster Registry will

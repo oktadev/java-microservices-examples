@@ -60,7 +60,20 @@ export default class BlogService {
   public update(entity: IBlog): Promise<IBlog> {
     return new Promise<IBlog>((resolve, reject) => {
       axios
-        .put(`${baseApiUrl}`, entity)
+        .put(`${baseApiUrl}/${entity.id}`, entity)
+        .then(res => {
+          resolve(res.data);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  public partialUpdate(entity: IBlog): Promise<IBlog> {
+    return new Promise<IBlog>((resolve, reject) => {
+      axios
+        .patch(`${baseApiUrl}/${entity.id}`, entity)
         .then(res => {
           resolve(res.data);
         })

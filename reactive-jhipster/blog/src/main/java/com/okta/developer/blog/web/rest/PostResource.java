@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -80,35 +81,54 @@ public class PostResource {
     }
 
     /**
-     * {@code PUT  /posts} : Updates an existing post.
+     * {@code PUT  /posts/:id} : Updates an existing post.
      *
+     * @param id the id of the post to save.
      * @param post the post to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated post,
      * or with status {@code 400 (Bad Request)} if the post is not valid,
      * or with status {@code 500 (Internal Server Error)} if the post couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/posts")
-    public Mono<ResponseEntity<Post>> updatePost(@Valid @RequestBody Post post) throws URISyntaxException {
-        log.debug("REST request to update Post : {}", post);
+    @PutMapping("/posts/{id}")
+    public Mono<ResponseEntity<Post>> updatePost(
+        @PathVariable(value = "id", required = false) final String id,
+        @Valid @RequestBody Post post
+    ) throws URISyntaxException {
+        log.debug("REST request to update Post : {}, {}", id, post);
         if (post.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, post.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
         return postRepository
-            .save(post)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-            .map(
-                result ->
-                    ResponseEntity
-                        .ok()
-                        .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId()))
-                        .body(result)
+            .existsById(id)
+            .flatMap(
+                exists -> {
+                    if (!exists) {
+                        return Mono.error(new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+                    }
+
+                    return postRepository
+                        .save(post)
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .map(
+                            result ->
+                                ResponseEntity
+                                    .ok()
+                                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId()))
+                                    .body(result)
+                        );
+                }
             );
     }
 
     /**
-     * {@code PATCH  /posts} : Updates given fields of an existing post.
+     * {@code PATCH  /posts/:id} : Partial updates given fields of an existing post, field will ignore if it is null
      *
+     * @param id the id of the post to save.
      * @param post the post to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated post,
      * or with status {@code 400 (Bad Request)} if the post is not valid,
@@ -116,42 +136,56 @@ public class PostResource {
      * or with status {@code 500 (Internal Server Error)} if the post couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/posts", consumes = "application/merge-patch+json")
-    public Mono<ResponseEntity<Post>> partialUpdatePost(@NotNull @RequestBody Post post) throws URISyntaxException {
-        log.debug("REST request to update Post partially : {}", post);
+    @PatchMapping(value = "/posts/{id}", consumes = "application/merge-patch+json")
+    public Mono<ResponseEntity<Post>> partialUpdatePost(
+        @PathVariable(value = "id", required = false) final String id,
+        @NotNull @RequestBody Post post
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Post partially : {}, {}", id, post);
         if (post.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, post.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
 
-        Mono<Post> result = postRepository
-            .findById(post.getId())
-            .map(
-                existingPost -> {
-                    if (post.getTitle() != null) {
-                        existingPost.setTitle(post.getTitle());
+        return postRepository
+            .existsById(id)
+            .flatMap(
+                exists -> {
+                    if (!exists) {
+                        return Mono.error(new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
                     }
 
-                    if (post.getContent() != null) {
-                        existingPost.setContent(post.getContent());
-                    }
+                    Mono<Post> result = postRepository
+                        .findById(post.getId())
+                        .map(
+                            existingPost -> {
+                                if (post.getTitle() != null) {
+                                    existingPost.setTitle(post.getTitle());
+                                }
+                                if (post.getContent() != null) {
+                                    existingPost.setContent(post.getContent());
+                                }
+                                if (post.getDate() != null) {
+                                    existingPost.setDate(post.getDate());
+                                }
 
-                    if (post.getDate() != null) {
-                        existingPost.setDate(post.getDate());
-                    }
+                                return existingPost;
+                            }
+                        )
+                        .flatMap(postRepository::save);
 
-                    return existingPost;
+                    return result
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .map(
+                            res ->
+                                ResponseEntity
+                                    .ok()
+                                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId()))
+                                    .body(res)
+                        );
                 }
-            )
-            .flatMap(postRepository::save);
-
-        return result
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-            .map(
-                res ->
-                    ResponseEntity
-                        .ok()
-                        .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId()))
-                        .body(res)
             );
     }
 

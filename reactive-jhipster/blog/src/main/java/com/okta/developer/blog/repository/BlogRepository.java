@@ -1,8 +1,8 @@
 package com.okta.developer.blog.repository;
 
 import com.okta.developer.blog.domain.Blog;
-import org.neo4j.springframework.data.repository.ReactiveNeo4jRepository;
-import org.neo4j.springframework.data.repository.query.Query;
+import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
+import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.stereotype.Repository;
 
 /**

@@ -184,7 +184,7 @@ class UserResourceIT {
         User user2 = new User();
         user2.setId(user1.getId());
         assertThat(user1).isEqualTo(user2);
-        user2.setId(UUID.randomUUID().toString());
+        user2.setId("id2");
         assertThat(user1).isNotEqualTo(user2);
         user1.setId(null);
         assertThat(user1).isNotEqualTo(user2);

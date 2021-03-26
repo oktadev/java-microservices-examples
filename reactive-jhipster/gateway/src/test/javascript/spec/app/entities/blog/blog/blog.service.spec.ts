@@ -18,6 +18,7 @@ const axiosStub = {
   get: sinon.stub(axios, 'get'),
   post: sinon.stub(axios, 'post'),
   put: sinon.stub(axios, 'put'),
+  patch: sinon.stub(axios, 'patch'),
   delete: sinon.stub(axios, 'delete'),
 };
 
@@ -99,6 +100,34 @@ describe('Service Tests', () => {
 
         return service
           .update({})
+          .then()
+          .catch(err => {
+            expect(err).toMatchObject(error);
+          });
+      });
+
+      it('should partial update a Blog', async () => {
+        const patchObject = Object.assign(
+          {
+            handle: 'BBBBBB',
+          },
+          new Blog()
+        );
+        const returnedFromService = Object.assign(patchObject, elemDefault);
+
+        const expected = Object.assign({}, returnedFromService);
+        axiosStub.patch.resolves({ data: returnedFromService });
+
+        return service.partialUpdate(patchObject).then(res => {
+          expect(res).toMatchObject(expected);
+        });
+      });
+
+      it('should not partial update a Blog', async () => {
+        axiosStub.patch.rejects(error);
+
+        return service
+          .partialUpdate({})
           .then()
           .catch(err => {
             expect(err).toMatchObject(error);

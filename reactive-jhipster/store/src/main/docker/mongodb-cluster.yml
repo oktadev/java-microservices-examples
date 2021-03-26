@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   store-mongodb:
-    image: mongo:4.4.3
+    image: mongo:4.4.4
     # If you want to expose these ports outside your dev PC,
     # remove the "127.0.0.1:" prefix
     ports:
@@ -14,6 +14,6 @@ services:
       dockerfile: mongodb/MongoDB.Dockerfile
     command: mongod --shardsvr --replSet rs1
   store-mongodb-config:
-    image: mongo:4.4.3
+    image: mongo:4.4.4
     container_name: store-mongodb-config
     command: mongod --configsvr --dbpath /data/db --replSet csvr

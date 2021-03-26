@@ -23,7 +23,7 @@ In this demo, I'll show you how to generate a microservice architecture that use
 +
 [source,shell]
 ----
-npm i -g generator-jhipster@beta
+npm i -g generator-jhipster@7
 ----
 
 . Create a directory called `reactive-stack` and initialize `git`.
@@ -49,7 +49,7 @@ application {
     clientFramework vue // <5>
     prodDatabaseType postgresql
     serviceDiscoveryType eureka
-    testFrameworks [protractor]
+    testFrameworks [cypress] // <6>
   }
   entities Blog, Post, Tag, Product
 }
@@ -59,7 +59,7 @@ application {
     baseName blog
     reactive true
     packageName com.okta.developer.blog
-    applicationType microservice // <6>
+    applicationType microservice // <7>
     authenticationType oauth2
     buildTool gradle
     databaseType neo4j
@@ -126,7 +126,7 @@ paginate Product with pagination
 microservice Product with store
 microservice Blog, Post, Tag with blog
 
-deployment { // <7>
+deployment { // <8>
   deploymentType docker-compose
   appsFolders [gateway, blog, store]
   dockerRepositoryName "mraible"
@@ -137,6 +137,7 @@ deployment { // <7>
 <.> The gateway and microservice apps must use the same authentication type.
 <.> Use Gradle, because a lot of y'all love it.
 <.> Vue support is new in JHipster 7, let's use it!
+<.> JHipster 7 supports Cypress! It seems to be more reliable than Protractor.
 <.> Make sure and specify `microservice` as the application type for the blog and store apps.
 <.> JDL allows you to create Docker Compose and Kubernetes deployments too!
 ====
@@ -198,9 +199,7 @@ This is because you will access your application with a browser on your machine 
 
 . Open `http://localhost:8080` in your favorite browser. You should be able to login with `admin/admin` as credentials.
 
-. To prove everything works, you can run `npm run e2e` in the gateway project's directory. This will run a number of end-to-end tests with https://www.protractortest.org/[Protractor].
-+
-NOTE: JHipster has support for https://www.cypress.io/[Cypress], but it https://github.com/jhipster/generator-jhipster/issues/12686[doesn't work with Okta] yet.
+. To prove everything works, you can run `npm run e2e` in the gateway project's directory. This will run a number of end-to-end tests with https://www.cypress.io/[Cypress].
 
 === Prepare Your Reactive Java Stack for Production
 
@@ -265,8 +264,8 @@ jhregistryup
 +
 [source,shell]
 ----
-export E2E_USERNAME=<your-username>
-export E2E_PASSWORD=<your-password>
+export CYPRESS_E2E_USERNAME=<your-username>
+export CYPRESS_E2E_PASSWORD=<your-password>
 npm run e2e
 ----
 

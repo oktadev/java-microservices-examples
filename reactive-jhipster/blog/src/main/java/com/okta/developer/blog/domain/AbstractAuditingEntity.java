@@ -3,9 +3,9 @@ package com.okta.developer.blog.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.time.Instant;
-import org.neo4j.springframework.data.core.schema.Property;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.neo4j.core.schema.Property;
 
 /**
  * Base abstract class for entities which will hold definitions for created, last modified, created by,

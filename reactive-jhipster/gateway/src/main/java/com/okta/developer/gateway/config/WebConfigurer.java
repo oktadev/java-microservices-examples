@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.data.web.ReactivePageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.ReactiveSortHandlerMethodArgumentResolver;
 import org.springframework.util.CollectionUtils;
@@ -22,6 +24,7 @@ import org.zalando.problem.spring.webflux.advice.ProblemExceptionHandler;
 import org.zalando.problem.spring.webflux.advice.ProblemHandling;
 import tech.jhipster.config.JHipsterConstants;
 import tech.jhipster.config.JHipsterProperties;
+import tech.jhipster.config.h2.H2ConfigurationHelper;
 import tech.jhipster.web.filter.reactive.CachingHttpHeadersFilter;
 
 /**
@@ -34,8 +37,11 @@ public class WebConfigurer implements WebFluxConfigurer {
 
     private final JHipsterProperties jHipsterProperties;
 
-    public WebConfigurer(JHipsterProperties jHipsterProperties) {
+    public WebConfigurer(Environment env, JHipsterProperties jHipsterProperties) {
         this.jHipsterProperties = jHipsterProperties;
+        if (env.acceptsProfiles(Profiles.of(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT))) {
+            H2ConfigurationHelper.initH2Console();
+        }
     }
 
     @Bean
@@ -49,6 +55,7 @@ public class WebConfigurer implements WebFluxConfigurer {
             source.registerCorsConfiguration("/v2/api-docs", config);
             source.registerCorsConfiguration("/v3/api-docs", config);
             source.registerCorsConfiguration("/swagger-resources", config);
+            source.registerCorsConfiguration("/swagger-ui/**", config);
             source.registerCorsConfiguration("/*/api/**", config);
             source.registerCorsConfiguration("/services/*/api/**", config);
             source.registerCorsConfiguration("/*/management/**", config);

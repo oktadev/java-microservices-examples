@@ -16,37 +16,46 @@
     <script src="./axios.min.js"></script>
 
     <script type="text/javascript">
-      function getCSRF() {
-        var name = 'XSRF-TOKEN=';
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-          var c = ca[i];
-          while (c.charAt(0) === ' ') c = c.substring(1);
-          if (c.indexOf(name) !== -1) return c.substring(name.length, c.length);
-        }
-        return '';
-      }
-
+      const AlwaysEnableTryItOutPlugin = function (system) {
+        const OperationContainer = system.getComponents('OperationContainer');
+        return {
+          components: {
+            TryItOutButton: () => null,
+            OperationContainer: class CustomOperationContainer extends OperationContainer {
+              constructor(...args) {
+                super(...args);
+                this.state.tryItOutEnabled = true;
+              }
+            },
+          },
+        };
+      };
       window.onload = function () {
-        // Automatically click all 'Try it out' buttons
-        var mutationObserver = new MutationObserver(function (mutations) {
-          mutations.forEach(function (mutation) {
-            document.querySelectorAll('.btn.try-out__btn:not(.cancel)').forEach(div => {
-              div.click();
-            });
-          });
-        });
-
-        mutationObserver.observe(document.documentElement, {
-          attributes: true,
-          childList: true,
-          subtree: true,
-        });
+        function getCSRF() {
+          var name = 'XSRF-TOKEN=';
+          var ca = document.cookie.split(';');
+          for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1);
+            if (c.indexOf(name) !== -1) return c.substring(name.length, c.length);
+          }
+          return '';
+        }
 
         var urls = [];
         axios.get('/swagger-resources').then(function (response) {
           response.data.forEach(function (resource) {
             urls.push({ name: resource.name, url: resource.location });
+          });
+
+          urls.sort(function (a, b) {
+            var x = a.name.toLowerCase(),
+              y = b.name.toLowerCase();
+            if (x.includes('(default)')) return -1;
+            if (y.includes('(default)')) return 1;
+            if (x.includes('(management)')) return -1;
+            if (y.includes('(management)')) return 1;
+            return x < y ? -1 : x > y ? 1 : 0;
           });
 
           // Build a system
@@ -58,7 +67,7 @@
             layout: 'StandaloneLayout',
             withCredentials: true,
             presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-            plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+            plugins: [SwaggerUIBundle.plugins.DownloadUrl, AlwaysEnableTryItOutPlugin],
             requestInterceptor: function (req) {
               req.headers['X-XSRF-TOKEN'] = getCSRF();
               // Remove the sample Swagger UI request body if present

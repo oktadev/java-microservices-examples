@@ -13,9 +13,7 @@
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
     "jhiPrefix": "jhi",
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "messageBroker": false,
     "prodDatabaseType": "neo4j",
     "searchEngine": false,
@@ -26,7 +24,7 @@
     "packageName": "com.okta.developer.blog",
     "packageFolder": "com/okta/developer/blog",
     "applicationType": "microservice",
-    "jhipsterVersion": "7.0.0-beta.1",
+    "jhipsterVersion": "7.0.0",
     "clientPackageManager": "npm",
     "dtoSuffix": "DTO",
     "entitySuffix": "",
@@ -41,14 +39,10 @@
     "clientThemeVariant": "",
     "withAdminUi": true,
     "nativeLanguage": "en",
-    "creationTimestamp": 1610916881976,
-    "jwtSecretKey": "NDVmYjZkMjcwZjVjNGNlYWVmMjdmOGUwODg3Y2Q3NzJmOGYyYWE1ZDAyY2QxMDc5YjQyYTNmNWJiZGU5Y2ZhNWM3OWY2Mzg2YzI5YmFkZTY3MDQxOThkZDg3YWQ3MGFiMmEwMzc3NjE2OTcyMTY3MGIwYzRkMjhjY2QwNWE4NGI=",
-    "lastLiquibaseTimestamp": 1610917061000,
-    "entities": [
-      "Tag",
-      "Blog",
-      "Post"
-    ],
+    "creationTimestamp": 1616651662172,
+    "jwtSecretKey": "MzcwNGVlOTc5MjM1OGQ4ZjY4MzcwZTNlMGI5NzdlODExNTZmMzg2M2NjZjM5N2U4ZjhjNWJkZjc0YjJmYmRmMzNjZGQ0MDEwNDMxYzA2MDVlOWIyZGRjZmQ0NTIxN2UyZjQwYTZjMDE1YzRlNjc2NTMwMWMyZjk1MDNhYTA4YmQ=",
+    "entities": ["Tag", "Blog", "Post"],
+    "lastLiquibaseTimestamp": 1616651842000,
     "appFolder": "blog"
   }
 }
