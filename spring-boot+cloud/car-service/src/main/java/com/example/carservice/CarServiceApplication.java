@@ -45,10 +45,8 @@ public class CarServiceApplication {
     ApplicationRunner init(CarRepository repository) {
         return args -> {
             Stream.of("Ferrari", "Jaguar", "Porsche", "Lamborghini", "Bugatti",
-                    "AMC Gremlin", "Triumph Stag", "Ford Pinto", "Yugo GV").forEach(name -> {
-                Car car = new Car();
-                car.setName(name);
-                repository.save(car);
+                "AMC Gremlin", "Triumph Stag", "Ford Pinto", "Yugo GV").forEach(name -> {
+                repository.save(new Car(name));
             });
             repository.findAll().forEach(System.out::println);
         };
