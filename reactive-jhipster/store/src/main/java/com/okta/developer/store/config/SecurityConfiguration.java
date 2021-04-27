@@ -47,10 +47,10 @@ import tech.jhipster.web.filter.reactive.CookieCsrfFilter;
 @Import(SecurityProblemSupport.class)
 public class SecurityConfiguration {
 
+    private final JHipsterProperties jHipsterProperties;
+
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
-
-    private final JHipsterProperties jHipsterProperties;
 
     private final SecurityProblemSupport problemSupport;
 
@@ -74,7 +74,7 @@ public class SecurityConfiguration {
                 .authenticationEntryPoint(problemSupport)
         .and()
             .headers()
-                .contentSecurityPolicy("default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com; font-src 'self' data:")
+            .contentSecurityPolicy(jHipsterProperties.getSecurity().getContentSecurityPolicy())
             .and()
                 .referrerPolicy(ReferrerPolicyServerHttpHeadersWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
             .and()

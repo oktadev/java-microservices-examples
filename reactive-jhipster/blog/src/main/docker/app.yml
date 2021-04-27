@@ -15,7 +15,7 @@ services:
       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET=internal
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
   blog-neo4j:
-    image: neo4j:4.2.3
+    image: neo4j:4.2.4
     # volumes:
     #   - ~/volumes/jhipster/blog/neo4j/:/data
     environment:

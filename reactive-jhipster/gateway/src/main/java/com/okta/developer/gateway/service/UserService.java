@@ -109,7 +109,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Flux<AdminUserDTO> getAllManagedUsers(Pageable pageable) {
-        return userRepository.findAllByIdNotNull(pageable).map(AdminUserDTO::new);
+        return userRepository.findAllWithAuthorities(pageable).map(AdminUserDTO::new);
     }
 
     @Transactional(readOnly = true)

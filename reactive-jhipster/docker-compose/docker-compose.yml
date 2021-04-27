@@ -39,7 +39,7 @@ services:
       - JHIPSTER_SLEEP=30
       - JHIPSTER_REGISTRY_PASSWORD=admin
   blog-neo4j:
-    image: neo4j:4.2.3
+    image: neo4j:4.2.4
     environment:
       - NEO4J_AUTH=none
 
@@ -86,3 +86,26 @@ services:
       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_OIDC_CLIENT_SECRET=jhipster-registry
     ports:
       - 8761:8761
+  keycloak:
+    image: jboss/keycloak:12.0.4
+    command:
+      [
+        "-b",
+        "0.0.0.0",
+        "-Dkeycloak.migration.action=import",
+        "-Dkeycloak.migration.provider=dir",
+        "-Dkeycloak.migration.dir=/opt/jboss/keycloak/realm-config",
+        "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING",
+        "-Djboss.socket.binding.port-offset=1000",
+        "-Dkeycloak.profile.feature.upload_scripts=enabled",
+      ]
+    volumes:
+      - ./realm-config:/opt/jboss/keycloak/realm-config
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=h2
+    ports:
+      - 9080:9080
+      - 9443:9443
+      - 10990:10990

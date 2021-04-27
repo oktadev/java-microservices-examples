@@ -7,6 +7,7 @@ import com.okta.developer.gateway.IntegrationTest;
 import com.okta.developer.gateway.config.Constants;
 import com.okta.developer.gateway.domain.Authority;
 import com.okta.developer.gateway.domain.User;
+import com.okta.developer.gateway.repository.AuthorityRepository;
 import com.okta.developer.gateway.repository.UserRepository;
 import com.okta.developer.gateway.security.AuthoritiesConstants;
 import com.okta.developer.gateway.service.EntityManager;
@@ -49,6 +50,9 @@ class UserResourceIT {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthorityRepository authorityRepository;
 
     @Autowired
     private UserMapper userMapper;
@@ -119,6 +123,10 @@ class UserResourceIT {
     void getAllUsers() {
         // Initialize the database
         userRepository.create(user).block();
+        authorityRepository
+            .findById(AuthoritiesConstants.USER)
+            .flatMap(authority -> userRepository.saveUserAuthority(user.getId(), authority.getName()))
+            .block();
 
         // Get all the users
         AdminUserDTO foundUser = webTestClient
@@ -140,12 +148,17 @@ class UserResourceIT {
         assertThat(foundUser.getEmail()).isEqualTo(DEFAULT_EMAIL);
         assertThat(foundUser.getImageUrl()).isEqualTo(DEFAULT_IMAGEURL);
         assertThat(foundUser.getLangKey()).isEqualTo(DEFAULT_LANGKEY);
+        assertThat(foundUser.getAuthorities()).containsExactly(AuthoritiesConstants.USER);
     }
 
     @Test
     void getUser() {
         // Initialize the database
         userRepository.create(user).block();
+        authorityRepository
+            .findById(AuthoritiesConstants.USER)
+            .flatMap(authority -> userRepository.saveUserAuthority(user.getId(), authority.getName()))
+            .block();
 
         // Get the user
         webTestClient
@@ -168,7 +181,9 @@ class UserResourceIT {
             .jsonPath("$.imageUrl")
             .isEqualTo(DEFAULT_IMAGEURL)
             .jsonPath("$.langKey")
-            .isEqualTo(DEFAULT_LANGKEY);
+            .isEqualTo(DEFAULT_LANGKEY)
+            .jsonPath("$.authorities")
+            .isEqualTo(AuthoritiesConstants.USER);
     }
 
     @Test
