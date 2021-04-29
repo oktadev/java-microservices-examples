@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   blog-neo4j:
-    image: neo4j:4.2.3
+    image: neo4j:4.2.4
     # volumes:
     #   - ~/volumes/jhipster/blog/neo4j/:/data
     environment:

@@ -150,7 +150,7 @@ configurations {
         resolutionStrategy {
             // Inherited version from Spring Boot can't be used because of regressions:
             // To be removed as soon as spring-boot use the same version
-            force 'org.liquibase:liquibase-core:4.3.1'
+            force 'org.liquibase:liquibase-core:4.3.2'
         }
     }
 }
@@ -183,6 +183,7 @@ dependencies {
     implementation "javax.cache:cache-api"
     implementation "org.hibernate:hibernate-core"
     implementation "com.zaxxer:HikariCP"
+    implementation "commons-beanutils:commons-beanutils:1.9.4"
     implementation "org.apache.commons:commons-lang3"
     implementation "commons-codec:commons-codec"
     implementation "javax.transaction:javax.transaction-api"
@@ -264,7 +265,7 @@ wrapper {
 if (project.hasProperty("nodeInstall")) {
     node {
         version = "14.16.0"
-        npmVersion = "7.6.3"
+        npmVersion = "7.8.0"
         download = true
     }
 }

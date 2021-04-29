@@ -95,7 +95,7 @@ module.exports = webpackMerge(baseWebpackConfig, {
         } */
       },
       {
-        reload: false,
+        reload: true,
       }
     ),
   ],

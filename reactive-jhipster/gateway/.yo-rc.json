@@ -26,7 +26,7 @@
     "packageName": "com.okta.developer.gateway",
     "packageFolder": "com/okta/developer/gateway",
     "applicationType": "gateway",
-    "jhipsterVersion": "7.0.0",
+    "jhipsterVersion": "7.0.1",
     "skipServer": false,
     "clientPackageManager": "npm",
     "dtoSuffix": "DTO",
@@ -39,9 +39,9 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1616651662172,
+    "creationTimestamp": 1619550649791,
     "entities": ["Tag", "Product", "Blog", "Post"],
-    "lastLiquibaseTimestamp": 1616651902000,
+    "lastLiquibaseTimestamp": 1619550889000,
     "appFolder": "gateway"
   }
 }

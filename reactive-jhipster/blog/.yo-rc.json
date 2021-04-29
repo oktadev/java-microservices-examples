@@ -24,7 +24,7 @@
     "packageName": "com.okta.developer.blog",
     "packageFolder": "com/okta/developer/blog",
     "applicationType": "microservice",
-    "jhipsterVersion": "7.0.0",
+    "jhipsterVersion": "7.0.1",
     "clientPackageManager": "npm",
     "dtoSuffix": "DTO",
     "entitySuffix": "",
