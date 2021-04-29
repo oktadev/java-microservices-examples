@@ -1,0 +1,9 @@
+node_modules/
+src/main/docker/
+src/test/javascript/cypress/
+src/test/javascript/jest.conf.js
+webpack/
+target/
+build/
+node/
+postcss.config.js

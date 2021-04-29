@@ -1,0 +1,14 @@
+{
+  "generator-jhipster": {
+    "deploymentType": "docker-compose",
+    "gatewayType": "SpringCloudGateway",
+    "monitoring": "no",
+    "directoryPath": "../",
+    "appsFolders": ["gateway", "blog", "store"],
+    "clusteredDbApps": [],
+    "serviceDiscoveryType": "eureka",
+    "dockerRepositoryName": "mraible",
+    "dockerPushCommand": "docker push",
+    "jwtSecretKey": "ODQyMjkwMWFkMGMwMTE3NDVmMzcyMDBkYzdmZmQ4NTk0YjliOWU4NzNiNmVkNGViMzM5YmFjMTgxNDhmNTc2MTg1NDUxODFhNmI3ZWEzZmY1M2M4ODY0MDBiODUxMGMyYjViMw=="
+  }
+}

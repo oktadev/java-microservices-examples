@@ -1,0 +1,18 @@
+{
+  "generator-jhipster": {
+    "appsFolders": ["blog", "gateway", "store"],
+    "directoryPath": "../",
+    "clusteredDbApps": ["store"],
+    "serviceDiscoveryType": "eureka",
+    "jwtSecretKey": "YzM1MjkyZDYzNGUwMzA2NzZmODJhY2FmMDNhMTVmZWMwMjE2M2MxN2IzNWZkYzc4ZDQwYWMzZjg5ZDE0M2M3ZWUzNjRhNDZiYzUzMTgyYWRhYjQ5MjQ4ZTFiMGFjZWFhYjlkOQ==",
+    "dockerRepositoryName": "gcr.io/jhipster7",
+    "dockerPushCommand": "docker push",
+    "kubernetesNamespace": "default",
+    "kubernetesServiceType": "LoadBalancer",
+    "kubernetesUseDynamicStorage": true,
+    "kubernetesStorageClassName": "",
+    "ingressDomain": "",
+    "monitoring": "no",
+    "istio": false
+  }
+}

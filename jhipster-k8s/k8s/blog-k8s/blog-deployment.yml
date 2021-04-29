@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog
+      version: "v1"
+  template:
+    metadata:
+      labels:
+        app: blog
+        version: "v1"
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - blog
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      initContainers:
+        - name: init-ds
+          image: busybox:latest
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              while true
+              do
+                rt=$(nc -z -w 1 blog-neo4j 7474)
+                if [ $? -eq 0 ]; then
+                  echo "DB is UP"
+                  break
+                fi
+                echo "DB is not yet reachable;sleep for 10s before retry"
+                sleep 10
+              done
+      containers:
+        - name: blog-app
+          image: gcr.io/jhipster7/blog
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: SPRING_CLOUD_CONFIG_URI
+              value: http://admin:${jhipster.registry.password}@jhipster-registry.default.svc.cluster.local:8761/config
+            - name: JHIPSTER_REGISTRY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: registry-secret
+                  key: registry-admin-password
+            - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+              value: http://admin:${jhipster.registry.password}@jhipster-registry.default.svc.cluster.local:8761/eureka/
+            - name: SPRING_NEO4J_URI
+              value: bolt://blog-neo4j.default.svc.cluster.local:7687
+            - name: SPRING_SLEUTH_PROPAGATION_KEYS
+              value: "x-request-id,x-ot-span-context"
+            - name: JAVA_OPTS
+              value: " -Xmx256m -Xms256m"
+            - name: SERVER_SHUTDOWN
+              value: graceful
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          ports:
+            - name: http
+              containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /management/health/readiness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /management/health/liveness
+              port: http
+            initialDelaySeconds: 120

@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: blog-neo4j-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: blog-neo4j
+  namespace: default
+  labels:
+    app: blog-neo4j
+type: Opaque
+data:
+  neo4j-password: OWZmN2M2MjhkM2QzNDg2NjQ0ZjhiZTE5ZjA4MmVlOTM1MTgyOGM5ZDViNTY5YTgxYjA4MjA1OTczMTZi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: blog-neo4j
+  namespace: default
+spec:
+  serviceName: blog-neo4j
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-neo4j
+  template:
+    metadata:
+      labels:
+        app: blog-neo4j
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: blog-neo4j-pvc
+      containers:
+        - name: neo4j
+          image: neo4j:4.2.4
+          env:
+            - name: NEO4J_AUTH
+              value: "none"
+          ports:
+            - containerPort: 7474
+            - containerPort: 7687
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/neo4j/data
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-neo4j
+  namespace: default
+spec:
+  selector:
+    app: blog-neo4j
+  ports:
+    - name: web
+      port: 7474
+    - name: bolt
+      port: 7687

@@ -1,0 +1,6 @@
+deployment {
+  deploymentType kubernetes
+  appsFolders [gateway, blog, store]
+  clusteredDbApps [store]
+  dockerRepositoryName "gcr.io/jhipster7"
+}
