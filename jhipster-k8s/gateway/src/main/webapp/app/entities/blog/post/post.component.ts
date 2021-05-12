@@ -148,3 +148,4 @@ export default class Post extends mixins(JhiDataUtils) {
     (<any>this.$refs.removeEntity).hide();
   }
 }
+

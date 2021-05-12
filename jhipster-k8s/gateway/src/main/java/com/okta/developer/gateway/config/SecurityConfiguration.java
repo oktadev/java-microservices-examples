@@ -105,6 +105,10 @@ public class SecurityConfiguration {
                 .jwt()
                 .jwtAuthenticationConverter(jwtAuthenticationConverter());
         http.oauth2Client();
+
+        http.redirectToHttps(redirect -> redirect
+            .httpsRedirectWhen(e -> e.getRequest().getHeaders().containsKey("X-Forwarded-Proto"))
+        );
         // @formatter:on
         return http.build();
     }

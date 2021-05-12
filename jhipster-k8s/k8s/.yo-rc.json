@@ -4,7 +4,7 @@
     "directoryPath": "../",
     "clusteredDbApps": ["store"],
     "serviceDiscoveryType": "eureka",
-    "jwtSecretKey": "YzM1MjkyZDYzNGUwMzA2NzZmODJhY2FmMDNhMTVmZWMwMjE2M2MxN2IzNWZkYzc4ZDQwYWMzZjg5ZDE0M2M3ZWUzNjRhNDZiYzUzMTgyYWRhYjQ5MjQ4ZTFiMGFjZWFhYjlkOQ==",
+    "jwtSecretKey": "MGYyOWI2ZGQxMjZmNmVkNmZlNjNlN2E0ZjQyOGNmYjViMGJlNzRjODJlZTlkOTkzM2E5YjEzOTA2NDE3ZmNmZDRkNGMzMDI3ZGE2ZDA5ZGY4YTMzOGYwZDg4OGRhODc1NDgzOA==",
     "dockerRepositoryName": "gcr.io/jhipster7",
     "dockerPushCommand": "docker push",
     "kubernetesNamespace": "default",

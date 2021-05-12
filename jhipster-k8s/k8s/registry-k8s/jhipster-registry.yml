@@ -19,7 +19,7 @@ metadata:
   namespace: default
 type: Opaque
 data:
-  registry-admin-password: YWRtaW4= # base64 encoded "admin"
+  registry-admin-password: ZTVmNzU2YWEtMmEyMy00NzE3LTgwOTMtNzcyYTRkOTliZDI4 # base64 encoded "e5f756aa-2a23-4717-8093-772a4d99bd28"
 ---
 apiVersion: v1
 kind: Service
@@ -80,6 +80,19 @@ spec:
               value: native
             - name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_SEARCH_LOCATIONS
               value: file:./central-config
+            - name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_TYPE
+              value: git
+            - name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_URI
+              value: https://github.com/mraible/reactive-java-ms-config/
+            - name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_SEARCH_PATHS
+              value: config
+            - name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_LABEL
+              value: main
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: encrypt-key
+                  key: ENCRYPT_KEY
             - name: EUREKA_INSTANCE_LEASE_RENEWAL_INTERVAL_IN_SECONDS
               value: "15"
             - name: EUREKA_INSTANCE_LEASE_EXPIRATION_DURATION_IN_SECONDS

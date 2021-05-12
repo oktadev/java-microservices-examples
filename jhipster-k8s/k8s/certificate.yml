@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: gateway-certificate
+spec:
+  domains:
+  # Replace the value with your domain name
+  - 34.95.101.174.nip.io

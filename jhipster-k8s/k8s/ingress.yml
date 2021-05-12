@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: gateway
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "gateway-ingress-ip"
+    networking.gke.io/managed-certificates: "gateway-certificate"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: gateway
+          servicePort: 8080
