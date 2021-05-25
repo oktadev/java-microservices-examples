@@ -5,12 +5,12 @@
 You will need to push your image to a registry. If you have not done so, use the following commands to tag and push the images:
 
 ```
-$ docker image tag blog gcr.io/jhipster7/blog
-$ docker push gcr.io/jhipster7/blog
-$ docker image tag gateway gcr.io/jhipster7/gateway
-$ docker push gcr.io/jhipster7/gateway
-$ docker image tag store gcr.io/jhipster7/store
-$ docker push gcr.io/jhipster7/store
+$ docker image tag blog mraible/blog
+$ docker push mraible/blog
+$ docker image tag gateway mraible/gateway
+$ docker push mraible/gateway
+$ docker image tag store mraible/store
+$ docker push mraible/store
 ```
 
 ## Deployment

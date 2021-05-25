@@ -5,7 +5,7 @@
     "clusteredDbApps": ["store"],
     "serviceDiscoveryType": "eureka",
     "jwtSecretKey": "MGYyOWI2ZGQxMjZmNmVkNmZlNjNlN2E0ZjQyOGNmYjViMGJlNzRjODJlZTlkOTkzM2E5YjEzOTA2NDE3ZmNmZDRkNGMzMDI3ZGE2ZDA5ZGY4YTMzOGYwZDg4OGRhODc1NDgzOA==",
-    "dockerRepositoryName": "gcr.io/jhipster7",
+    "dockerRepositoryName": "mraible",
     "dockerPushCommand": "docker push",
     "kubernetesNamespace": "default",
     "kubernetesServiceType": "LoadBalancer",

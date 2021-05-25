@@ -2,13 +2,13 @@ apiVersion: skaffold/v1
 kind: Config
 build:
   artifacts:
-    - image: gcr.io/jhipster7/blog
+    - image: mraible/blog
       context: ../blog
       jib: {}
-    - image: gcr.io/jhipster7/gateway
+    - image: mraible/gateway
       context: ../gateway
       jib: {}
-    - image: gcr.io/jhipster7/store
+    - image: mraible/store
       context: ../store
       jib: {}
   tagPolicy:

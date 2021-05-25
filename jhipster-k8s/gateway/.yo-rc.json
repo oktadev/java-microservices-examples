@@ -44,7 +44,7 @@
     "lastLiquibaseTimestamp": 1619550889000,
     "appFolder": "gateway",
     "clusteredDb": false,
-    "targetImageName": "gcr.io/jhipster7/gateway",
+    "targetImageName": "mraible/gateway",
     "dbPeerCount": 1
   }
 }

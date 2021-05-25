@@ -45,7 +45,7 @@
     "lastLiquibaseTimestamp": 1616651842000,
     "appFolder": "blog",
     "clusteredDb": false,
-    "targetImageName": "gcr.io/jhipster7/blog",
+    "targetImageName": "mraible/blog",
     "dbPeerCount": 1
   }
 }

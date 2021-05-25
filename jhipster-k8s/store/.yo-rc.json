@@ -45,7 +45,7 @@
     "lastLiquibaseTimestamp": 1616651722000,
     "appFolder": "store",
     "clusteredDb": true,
-    "targetImageName": "gcr.io/jhipster7/store",
+    "targetImageName": "mraible/store",
     "dbPeerCount": 3
   }
 }

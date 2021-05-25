@@ -68,12 +68,17 @@ spec:
             # StatefulSet specific configuration
             # Registry configuration
             - name: SPRING_PROFILES_ACTIVE
-              value: prod,k8s
+              value: prod,k8s,oauth2
             - name: SPRING_SECURITY_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: registry-secret
                   key: registry-admin-password
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: encrypt-key
+                  key: ENCRYPT_KEY
             - name: JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET
               value: YlhrdGMyVmpjbVYwTFhSdmEyVnVMWFJ2TFdOb1lXNW5aUzFwYmkxd2NtOWtkV04wYVc5dUxXRnVaQzEwYnkxclpXVndMV2x1TFdFdGMyVmpkWEpsTFhCc1lXTmwK
             - name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_TYPE
@@ -88,11 +93,6 @@ spec:
               value: config
             - name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_LABEL
               value: main
-            - name: ENCRYPT_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: encrypt-key
-                  key: ENCRYPT_KEY
             - name: EUREKA_INSTANCE_LEASE_RENEWAL_INTERVAL_IN_SECONDS
               value: "15"
             - name: EUREKA_INSTANCE_LEASE_EXPIRATION_DURATION_IN_SECONDS
