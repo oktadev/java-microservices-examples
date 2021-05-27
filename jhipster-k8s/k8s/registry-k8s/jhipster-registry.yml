@@ -16,7 +16,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: registry-secret
-  namespace: default
+  namespace: demo
 type: Opaque
 data:
   registry-admin-password: ZTVmNzU2YWEtMmEyMy00NzE3LTgwOTMtNzcyYTRkOTliZDI4 # base64 encoded "e5f756aa-2a23-4717-8093-772a4d99bd28"
@@ -25,7 +25,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: jhipster-registry
-  namespace: default
+  namespace: demo
   labels:
     app: jhipster-registry
   annotations:
@@ -42,7 +42,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: jhipster-registry
-  namespace: default
+  namespace: demo
 spec:
   # added to circumvent kustomize bug
   volumeClaimTemplates: []

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: store
-  namespace: default
+  namespace: demo
 spec:
   replicas: 1
   selector:
@@ -51,18 +51,18 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: prod
             - name: SPRING_CLOUD_CONFIG_URI
-              value: http://admin:${jhipster.registry.password}@jhipster-registry.default.svc.cluster.local:8761/config
+              value: http://admin:${jhipster.registry.password}@jhipster-registry.demo.svc.cluster.local:8761/config
             - name: JHIPSTER_REGISTRY_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: registry-secret
                   key: registry-admin-password
             - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-              value: http://admin:${jhipster.registry.password}@jhipster-registry.default.svc.cluster.local:8761/eureka/
+              value: http://admin:${jhipster.registry.password}@jhipster-registry.demo.svc.cluster.local:8761/eureka/
             - name: SPRING_DATA_MONGODB_DATABASE
               value: store
             - name: SPRING_DATA_MONGODB_URI
-              value: "mongodb://store-mongodb-0.store-mongodb.default:27017/?waitQueueMultiple=1000,store-mongodb-1.store-mongodb.default:27017/?waitQueueMultiple=1000,store-mongodb-2.store-mongodb.default:27017/?waitQueueMultiple=1000"
+              value: "mongodb://store-mongodb-0.store-mongodb.demo:27017/?waitQueueMultiple=1000,store-mongodb-1.store-mongodb.demo:27017/?waitQueueMultiple=1000,store-mongodb-2.store-mongodb.demo:27017/?waitQueueMultiple=1000"
             - name: SPRING_SLEUTH_PROPAGATION_KEYS
               value: "x-request-id,x-ot-span-context"
             - name: JAVA_OPTS

@@ -1,7 +1,10 @@
 commonLabels:
   app.kubernetes.io/genereted-by: JHipster
 
+namespace: demo
+
 resources:
+  - namespace.yml
   # Individual apps
   - blog-k8s/blog-deployment.yml
   - blog-k8s/blog-service.yml

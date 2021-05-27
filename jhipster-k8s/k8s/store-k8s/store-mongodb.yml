@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: default
+  namespace: demo
   name: store-mongodb-config
 data:
   mongod.conf: |
@@ -15,7 +15,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: default
+  namespace: demo
   name: store-mongodb-init
 data:
   on-start.sh: |
@@ -154,7 +154,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: store-mongodb
-  namespace: default
+  namespace: demo
 spec:
   serviceName: store-mongodb
   replicas: 3
@@ -312,7 +312,7 @@ metadata:
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
   name: store-mongodb
-  namespace: default
+  namespace: demo
 spec:
   type: ClusterIP
   clusterIP: None

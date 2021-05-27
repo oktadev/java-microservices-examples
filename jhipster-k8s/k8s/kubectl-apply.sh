@@ -24,6 +24,7 @@ logSummary() {
 
 default() {
     suffix=k8s
+    kubectl apply -f namespace.yml
     kubectl apply -f registry-${suffix}/
     kubectl apply -f blog-${suffix}/
     kubectl apply -f gateway-${suffix}/

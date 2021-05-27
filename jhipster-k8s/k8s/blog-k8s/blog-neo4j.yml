@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: blog-neo4j-pvc
-  namespace: default
+  namespace: demo
 spec:
   accessModes:
     - ReadWriteOnce
@@ -14,7 +14,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: blog-neo4j
-  namespace: default
+  namespace: demo
   labels:
     app: blog-neo4j
 type: Opaque
@@ -25,7 +25,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: blog-neo4j
-  namespace: default
+  namespace: demo
 spec:
   serviceName: blog-neo4j
   replicas: 1
@@ -65,7 +65,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: blog-neo4j
-  namespace: default
+  namespace: demo
 spec:
   selector:
     app: blog-neo4j
