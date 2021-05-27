@@ -1,4 +1,3 @@
-
 # Java Microservices with Spring Cloud Config and JHipster ⚙️
  
 This example is built with JHipster and configured centrally with Spring Cloud Config. See [Java Microservices with Spring Cloud Config and JHipster](https://developer.okta.com/blog/2019/05/23/java-microservices-spring-cloud-config) to see how it was created.

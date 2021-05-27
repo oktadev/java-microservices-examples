@@ -1,4 +1,3 @@
-
 # Java Microservices with Spring Boot and Spring Cloud 🍃☁️
 
 This example is a bare-bones microservices architecture built with Spring Boot, Spring Cloud, Eureka Server, and Zuul. See [Java Microservices with Spring Boot and Spring Cloud](https://developer.okta.com/blog/2019/05/22/java-microservices-spring-boot-spring-cloud) to see how it was created.
