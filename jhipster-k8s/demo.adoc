@@ -66,7 +66,7 @@ CAUTION: If this doesn't work, use `brew install minikube`, or see https://minik
 +
 This command will start Minikube with 16 GB of RAM and 8 CPUs. Unfortunately, the default, which is 16 GB RAM and two CPUs, did not work for me.
 
-== Create Docker Images
+== Create Docker Images with Jib
 
 . In the {`gateway`, `blog`, `store` } directories, run the following Gradle command (where `<image-name>` is `gateway`, `store`, or `blog`).
 
@@ -75,10 +75,6 @@ This command will start Minikube with 16 GB of RAM and 8 CPUs. Unfortunately, th
 == Register an OIDC App for Auth
 
 . Use the https://cli.okta.com[Okta CLI] and run `okta apps create jhipster`.
-
-== Encrypt / Decrypt Your Spring Cloud Configuration
-
-JHipster ships with JHipster Registry. It acts as a Eureka service for service discovery and contains a Spring Cloud Config server for distributing your configuration settings.
 
 . Update `k8s/registry-k8s/application-configmap.yml` to contain your OIDC settings from the `.okta.env` file the Okta CLI just created. The Spring Cloud Config server reads from this file and shares the values with the gateway and microservices.
 +
@@ -180,6 +176,40 @@ You can quit by typing `/exit`.
 
 TIP: If you don't want to restart the Spring Cloud Config server when you update its configuration, see link:/blog/2020/12/07/spring-cloud-config#refresh-the-configuration-in-your-spring-cloud-config-server[Refresh the Configuration in Your Spring Cloud Config Server].
 
+=== Change Spring Cloud Config to use Git
+
+You might want to store your app's configuration externally. That way, you don't have to redeploy everything to change values. Good news! Spring Cloud Config makes it easy to switch to Git instead of the filesystem to store your configuration.
+
+. In `k8s/registry-k8s/jhipster-registry.yml`, find the following variables:
++
+[source,yaml]
+----
+- name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_TYPE
+  value: native
+- name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_SEARCH_LOCATIONS
+  value: file:./central-config
+----
++
+Below these values, add a second lookup location.
++
+[source,yaml]
+----
+- name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_TYPE
+  value: git
+- name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_URI
+  value: https://github.com/mraible/reactive-java-ms-config/
+- name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_SEARCH_PATHS
+  value: config
+- name: SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_1_LABEL
+  value: main
+----
+
+. Create a GitHub repo that matches the URI, path, and branch you entered.
++
+In my case, I created https://github.com/mraible/reactive-java-ms-config/[reactive-java-ms-config] and added a `config/application.yml` file in the `main` branch. Then, I added my `spring.security.*` values to it and removed them from `k8s/registry-k8s/application-configmap.yml`.
+
+See Spring Cloud Config's https://cloud.spring.io/spring-cloud-config/multi/multi__spring_cloud_config_server.html#_git_backend[Git Backend docs] for more information.
+
 == Deploy Spring Boot Microservices to Google Cloud
 
 Giddyup, let's go to production! 🤠
@@ -194,6 +224,8 @@ You can also use `kubectl` commands to switch clusters.
   kubectl config use-context XXX
 +
 TIP: The cool kids use `kubectx` and `kubens` to set the default context and namespace. You can learn how to install and use them via the https://github.com/ahmetb/kubectx[kubectx GitHub project].
+
+=== Create a Container Registry on Google Cloud
 
 . https://spring-gcp.saturnism.me/getting-started/google-cloud-platform[Sign up for Google Cloud Platform (GCP)], log in, and create a project.
 
@@ -254,7 +286,7 @@ containers:
 
 Now that you know things work, let's integrate better security, starting with HTTPS.
 
-=== Add HTTPS
+=== Add HTTPS to Your Reactive Gateway
 
 You should always use HTTPS. It's one of the easiest ways to secure things, especially with the free certificates offered these days. Ray Tsang's https://spring-gcp.saturnism.me/deployment/kubernetes/load-balancing/external-load-balancing[External Load Balancing docs] was a big help in figuring out all these steps.
 
