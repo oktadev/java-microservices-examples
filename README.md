@@ -4,19 +4,19 @@ This repository contains examples of how to build a Java microservices architect
 
 This repository has five examples in it:
 
-1. The first is a bare-bones microservices architecture with Spring Boot, Spring Cloud, Eureka Server, and Zuul. 
-2. The second is one that's built with JHipster and configured centrally with Spring Cloud Config. 
-3. The third uses Spring Cloud Gateway and Spring WebFlux to show reactive microservices.
-4. The fourth uses JHipster 7 to generate a reactive microservices architecture with Spring Cloud Gateway and Spring WebFlux.
-5. The fifth uses JHipster 7 + Kubernetes and deploys to Google Cloud with sealed secrets. 
+1. A bare-bones microservices architecture with Spring Boot, Spring Cloud, Eureka Server, and Zuul. 
+2. A microservices architecture that's generated with JHipster and configured centrally with Spring Cloud Config. 
+3. A microservices architecture that uses Spring Cloud Gateway and Spring WebFlux to show reactive microservices.
+4. A JHipster-generated reactive microservices architecture with Spring Cloud Gateway and Spring WebFlux.
+5. A JHipster 7 + Kubernetes example that deploys to Google Cloud with sealed secrets. 
 
 We think you'll enjoy them all!
 
-* See [Java Microservices with Spring Boot and Spring Cloud][blog-spring-boot-spring-cloud] for an overview of the first example.
-* Read [Java Microservices with Spring Cloud Config and JHipster][blog-spring-cloud-config] to learn about microservices with JHipster.
-* Refer to [Secure Reactive Microservices with Spring Cloud Gateway][blog-spring-cloud-gateway] to learn about Spring Cloud Gateway and reactive microservices.
-* Refer to [Reactive Java Microservices with Spring Boot and JHipster][blog-reactive-jhipster] to see how JHipster makes reactive microservices a breeze.
-* Peruse to [Kubernetes to the Cloud with Spring Boot and JHipster][blog-k8s] to see how JHipster simplifies Kubernetes deployments.
+1. See [Java Microservices with Spring Boot and Spring Cloud][blog-spring-boot-spring-cloud] for an overview of the first example.
+2. Read [Java Microservices with Spring Cloud Config and JHipster][blog-spring-cloud-config] to learn about microservices with JHipster.
+3. Refer to [Secure Reactive Microservices with Spring Cloud Gateway][blog-spring-cloud-gateway] to learn about Spring Cloud Gateway and reactive microservices.
+4. Refer to [Reactive Java Microservices with Spring Boot and JHipster][blog-reactive-jhipster] to see how JHipster makes reactive microservices a breeze.
+5. Peruse [Kubernetes to the Cloud with Spring Boot and JHipster][blog-k8s] to see how JHipster simplifies Kubernetes deployments.
 
 **Prerequisites:** [Java 11](https://sdkman.io/sdks#java) and an internet connection.
 
