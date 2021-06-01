@@ -34,17 +34,17 @@ You will be prompted with several questions. The answers will be pre-populated f
 
 - Type of application: **Microservice application**
 - Root directory: **../**
-- Which applications? <select all>
+- Which applications? `<select all>`
 - Set up monitoring? **No**
 - Which applications with clustered databases? select **store**
-- Admin password for JHipster Registry: <generate one>
+- Admin password for JHipster Registry: `<generate one>`
 - Kubernetes namespace: **demo**
-- Docker repository name: <your docker hub username>
+- Docker repository name: `<your docker hub username>`
 - Command to push Docker image: `docker push`
 - Enable Istio? **No**
 - Kubernetes service type? **LoadBalancer**
 - Use dynamic storage provisioning? **Yes**
-- Use a specific storage class? <leave empty>
+- Use a specific storage class? `<leave empty>`
 
 ## Install Minikube to Run Kubernetes Locally
 
@@ -54,7 +54,7 @@ If you have Docker installed, you can run Kubernetes locally with Minikube. Run 
 minikube --memory 8g --cpus 8 start
 ```
 
-Now, you need to build Docker images for each app. In the {`gateway`, `blog`, `store` } directories, run the following Gradle command (where `<image-name>` is `gateway`, `store`, or `blog`).
+Build Docker images for each app. In the {`gateway`, `blog`, `store` } directories, run the following Gradle command (where `<image-name>` is `gateway`, `store`, or `blog`).
 
 ```shell
 ./gradlew bootJar -Pprod jib -Djib.to.image=<docker-repo-name>/<image-name>
@@ -147,7 +147,7 @@ You can use port-forwarding to see the JHipster Registry.
 kubectl port-forward svc/jhipster-registry -n default 8761
 ```
 
-Open a browser and navigate to `\http://localhost:8761`. You'll need to sign in with your Okta credentials.
+Open a browser and navigate to `http://localhost:8761`. You'll need to sign in with your Okta credentials.
 
 Once all is green, use port-forwarding to see the gateway app.
 
@@ -161,7 +161,7 @@ Please read the [Kubernetes to the Cloud with Spring Boot and JHipster][blog] fo
 
 ## Links
 
-These examples uses the following open source libraries:
+This example uses the following open source libraries:
 
 * [Spring Boot](https://spring.io/projects/spring-boot)
 * [Spring Cloud](https://spring.io/projects/spring-cloud)
@@ -179,4 +179,4 @@ Please post any questions as comments on [this example's blog post][blog], or on
 
 Apache 2.0, see [LICENSE](LICENSE).
 
-[blog]: https://developer.okta.com/blog/2021/06/01/kubernetes-java-spring-boot
+[blog]: https://developer.okta.com/blog/2021/06/01/kubernetes-spring-boot-jhipster
