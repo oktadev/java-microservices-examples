@@ -1,0 +1,18 @@
+apiVersion: skaffold/v1
+kind: Config
+build:
+  artifacts:
+    - image: mraible/blog
+      context: ../blog
+      jib: {}
+    - image: mraible/gateway
+      context: ../gateway
+      jib: {}
+    - image: mraible/store
+      context: ../store
+      jib: {}
+  tagPolicy:
+    envTemplate:
+      template: "{{.IMAGE_NAME}}:latest"
+deploy:
+  kustomize: {}

@@ -1,4 +1,3 @@
-
 # Reactive Java Microservices with Spring Boot and JHipster 🤓
  
 This example uses JHipster 7 to generate a reactive microservices architecture with Spring Cloud Gateway and Spring WebFlux. See [Reactive Java Microservices with Spring Boot and JHipster](https://developer.okta.com/blog/2021/01/20/reactive-java-microservices) to see how it was built.

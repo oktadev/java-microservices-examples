@@ -1,0 +1,504 @@
+:experimental:
+// Define unicode for Apple Command key.
+:commandkey: &#8984;
+:toc: macro
+
+= Kubernetes to the Cloud with JHipster Demo
+
+Today, I'd like to show you how to use JHipster 7 to create a reactive Java microservices architecture and deploy it to Google Cloud with Kubernetes.
+
+**Prerequisites:**
+
+- https://sdkman.io/[Java 11]+
+- https://nodejs.org/[Node 14]+
+- https://docs.docker.com/get-docker/[Docker]
+- A https://cloud.google.com/[Google Cloud] Account
+
+toc::[]
+
+== Create a Kubernetes-Ready Microservices Architecture
+
+In this demo, I'll generate K8s deployment descriptors, use Spring Cloud Config with Git, encrypt your secrets, and make it all work on Google Cloud (GKE to be specific).
+
+. Start by cloning the JHipster 7 { Vue, Spring Boot, WebFlux } reactive microservices project from GitHub:
+
+  git clone https://github.com/oktadeveloper/java-microservices-examples.git
+  cd java-microservices-examples/reactive-jhipster
+
+. Install JHipster.
+
+  npm i -g generator-jhipster@7
+
+== Generate Kubernetes Deployment Descriptors
+
+. Open the `reactive-jhipster` project in a terminal and start the JHipster Kubernetes sub-generator.
+
+  take k8s
+  jhipster k8s
+
+. Answer the prompts:
+
+- Type of application: **Microservice application**
+- Root directory: **../**
+- Which applications? <select all>
+- Set up monitoring? **No**
+- Which applications with clustered databases? select **store**
+- Admin password for JHipster Registry: <generate one>
+- Kubernetes namespace: **demo**
+- Docker repository name: <your docker hub username>
+- Command to push Docker image: `docker push`
+- Enable Istio? **No**
+- Kubernetes service type? **LoadBalancer**
+- Use dynamic storage provisioning? **Yes**
+- Use a specific storage class? <leave empty>
+
+NOTE: If you don't want to publish your images on https://hub.docker.com/[Docker Hub], leave the Docker repository name blank.
+
+I already showed you how to get everything working with Docker Compose link:/blog/2021/01/20/reactive-java-microservices#run-your-microservices-stack-with-docker-compose[in the previous tutorial]. So today, let's run things locally with Minikube.
+
+== Install Minikube to Run Kubernetes Locally
+
+. Run `minikube start` to begin.
+
+  minikube --cpus 8 start
++
+CAUTION: If this doesn't work, use `brew install minikube`, or see https://minikube.sigs.k8s.io/docs/start/[Minikube's installation instructions].
++
+This command will start Minikube with 16 GB of RAM and 8 CPUs. Unfortunately, the default, which is 16 GB RAM and two CPUs, did not work for me.
+
+== Create Docker Images
+
+. In the {`gateway`, `blog`, `store` } directories, run the following Gradle command (where `<image-name>` is `gateway`, `store`, or `blog`).
+
+  ./gradlew bootJar -Pprod jib -Djib.to.image=<docker-repo-name>/<image-name>
+
+== Register an OIDC App for Auth
+
+. Use the https://cli.okta.com[Okta CLI] and run `okta apps create jhipster`.
+
+== Encrypt / Decrypt Your Spring Cloud Configuration
+
+JHipster ships with JHipster Registry. It acts as a Eureka service for service discovery and contains a Spring Cloud Config server for distributing your configuration settings.
+
+. Update `k8s/registry-k8s/application-configmap.yml` to contain your OIDC settings from the `.okta.env` file the Okta CLI just created. The Spring Cloud Config server reads from this file and shares the values with the gateway and microservices.
++
+[source,yaml]
+----
+data:
+  application.yml: |-
+    ...
+    spring:
+      security:
+        oauth2:
+          client:
+            provider:
+              oidc:
+                issuer-uri: https://<your-okta-domain>/oauth2/default
+            registration:
+              oidc:
+                client-id: <client-id>
+                client-secret: <client-secret>
+----
++
+_Whhaaattt??? Plain-text secrets in YAML files?! WTF??_ I'll come back to this in a minute.
+
+. To configure the JHipster Registry to use OIDC for authentication, modify `k8s/registry-k8s/jhipster-registry.yml` to enable the `oauth2` profile.
++
+[source,yaml]
+----
+- name: SPRING_PROFILES_ACTIVE
+  value: prod,k8s,oauth2
+----
+
+== Start Your Spring Boot Microservices with K8s
+
+. In the `k8s` directory, start your engines!
+
+  ./kubectl-apply.sh -f
+
+. You can see if everything starts up successfully using `kubectl get pods -n demo`. Or, even better, use https://k9scli.io/[K9s].
+
+. Port-forward the registry and gateway to see them in a browser.
+
+  kubectl port-forward svc/jhipster-registry -n demo 8761
+  kubectl port-forward svc/gateway -n demo 8080
+
+. Sign in with your Okta credentials at `http://localhost:8761` and `http://localhost:8080`.
+
+== [Optional] Test with Cypress
+
+. You can also automate testing to ensure that everything works. Set your Okta credentials as environment variables and run end-to-end tests using Cypress (from the gateway directory).
+
+  export CYPRESS_E2E_USERNAME=<your-okta-username>
+  export CYPRESS_E2E_PASSWORD=<your-okta-password>
+  npm run e2e
+
+== Encrypt Your Secrets with Spring Cloud Config
+
+The JHipster Registry has an encryption mechanism you can use to encrypt your secrets. That way, it's safe to store them in public repositories.
+
+. Add an `ENCRYPT_KEY` to the environment variables in `k8s/registry-k8s/jhipster-registry.yml`.
++
+[source,yaml]
+----
+- name: ENCRYPT_KEY
+  value: really-long-string-of-random-charters-that-you-can-keep-safe
+----
++
+[TIP]
+====
+You can use JShell to generate a UUID you can use for your encrypt key.
+
+[source,shell]
+----
+jshell
+
+UUID.randomUUID()
+----
+
+You can quit by typing `/exit`.
+====
+
+. Restart your JHipster Registry containers from the `k8s` directory.
+
+  ./kubectl-apply.sh -f
+
+=== Encrypt Your OIDC Client Secret
+
+. Sign in to `http://localhost:8761` and go to **Configuration** > **Encryption**.
+
+. Copy and paste your client secret from `application-configmap.yml` (or `.okta.env`) and click **Encrypt**.
+
+. Then, copy the encrypted value back into `application-configmap.yml`. Make sure to wrap it in quotes!
+
+. Apply these changes and restart all deployments.
+
+  ./kubectl-apply.sh -f
+  kubectl rollout restart deploy -n demo
+
+. Verify everything still works at `\http://localhost:8080`.
+
+TIP: If you don't want to restart the Spring Cloud Config server when you update its configuration, see link:/blog/2020/12/07/spring-cloud-config#refresh-the-configuration-in-your-spring-cloud-config-server[Refresh the Configuration in Your Spring Cloud Config Server].
+
+== Deploy Spring Boot Microservices to Google Cloud
+
+Giddyup, let's go to production! 🤠
+
+. Stop Minikube:
+
+  minikube stop
++
+You can also use `kubectl` commands to switch clusters.
+
+  kubectl config get-contexts
+  kubectl config use-context XXX
++
+TIP: The cool kids use `kubectx` and `kubens` to set the default context and namespace. You can learn how to install and use them via the https://github.com/ahmetb/kubectx[kubectx GitHub project].
+
+. https://spring-gcp.saturnism.me/getting-started/google-cloud-platform[Sign up for Google Cloud Platform (GCP)], log in, and create a project.
+
+. Open a https://console.cloud.google.com/[console] in your browser or download and install the https://cloud.google.com/sdk/[`gcloud` CLI] if you want to run things locally.
+
+. Enable the Google Kubernetes Engine API and Container Registry:
+
+  gcloud services enable container.googleapis.com containerregistry.googleapis.com
+
+=== Create a Kubernetes Cluster
+
+. Create a cluster for your apps.
+
+  gcloud container clusters create CLUSTER_NAME \
+  --zone us-central1-a \
+  --machine-type n1-standard-4 \
+  --enable-autorepair \
+  --enable-autoupgrade
+
+. Navigate to the `gateway` directory and run:
+
+  ./gradlew bootJar -Pprod jib -Djib.to.image=gcr.io/<your-project-id>/gateway
+
+. Repeat the process for `blog` and `store`. You can run these processes in parallel to speed things up.
+
+. In your `k8s/**/*-deployment.yml` files, add `gcr.io/<your-project-id>` as a prefix.
++
+[source,yaml]
+----
+containers:
+  - name: gateway-app
+    image: gcr.io/jhipster7/gateway
+----
+
+. In the `k8s` directory, apply all the deployment descriptors to run all your images.
+
+[source,shell]
+----
+./kubectl-apply.sh -f
+----
+
+=== Access Your Gateway on Google Cloud
+
+. Once everything is up and running, get the external IP of your gateway.
+
+  kubectl get svc gateway -n demo
+
+. You'll need to add the external IP address as a valid redirect to your Okta OIDC app. Run `okta login`, open the returned URL in your browser, and sign in to the Okta Admin Console. Go to the **Applications** section, find your application, and edit it.
+
+. Add the standard JHipster redirect URIs using the IP address. For example, `\http://34.71.48.244:8080/login/oauth2/code/oidc` for the login redirect URI, and `\http://34.71.48.244:8080` for the logout redirect URI.
+
+. Use the following command to set your gateway's IP address as a variable you can curl.
+
+  EXTERNAL_IP=$(kubectl get svc gateway -n demo -ojsonpath="{.status.loadBalancer.ingress[0].ip}")
+  curl $EXTERNAL_IP:8080
+
+. Run `open \http://$EXTERNAL_IP:8080`, and you should be able to sign in.
+
+Now that you know things work, let's integrate better security, starting with HTTPS.
+
+=== Add HTTPS
+
+You should always use HTTPS. It's one of the easiest ways to secure things, especially with the free certificates offered these days. Ray Tsang's https://spring-gcp.saturnism.me/deployment/kubernetes/load-balancing/external-load-balancing[External Load Balancing docs] was a big help in figuring out all these steps.
+
+. Create a static IP to assign your TLS (the official name for HTTPS) certificate.
+
+  gcloud compute addresses create gateway-ingress-ip --global
+
+. Run the following command to make sure it worked.
+
+  gcloud compute addresses describe gateway-ingress-ip --global --format='value(address)'
+
+. Then, create a `k8s/ingress.yml` file:
++
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "gateway-ingress-ip"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /*
+        pathType: Prefix
+        backend:
+          service:
+            name: gateway
+            port:
+              number: 8080
+----
+
+. Deploy it and make sure it worked.
++
+[source,shell]
+----
+kubectl apply -f ingress.yml -n demo
+
+# keep running this command displays an IP address
+# (hint: up arrow recalls the last command)
+kubectl get ingress gateway -n demo
+----
+
+. To use a TLS certificate, you must have a fully qualified domain name and configure it to point to the IP address. If you don't have a real domain, you can use https://nip.io/[nip.io].
+
+. Set the IP in a variable, as well as the domain.
++
+[source,shell]
+----
+EXTERNAL_IP=$(kubectl get ingress gateway -ojsonpath="{.status.loadBalancer.ingress[0].ip}")
+DOMAIN="${EXTERNAL_IP}.nip.io"
+
+# Prove it works
+echo $DOMAIN
+curl $DOMAIN
+----
+
+. To create a certificate, create a `k8s/certificate.yml` file.
++
+[source,shell]
+----
+cat << EOF > certificate.yml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: gateway-certificate
+spec:
+  domains:
+  # Replace the value with your domain name
+  - ${DOMAIN}
+EOF
+----
+
+. Add the certificate to `ingress.yml`:
++
+[source,yaml]
+----
+metadata:
+  name: gateway
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "gateway-ingress-ip"
+    networking.gke.io/managed-certificates: "gateway-certificate"
+----
+
+. Deploy both files:
+
+  kubectl apply -f certificate.yml -f ingress.yml -n demo
+
+. Check your certificate's status until it prints `Status: ACTIVE`:
+
+  kubectl describe managedcertificate gateway-certificate -n demo
+
+=== Force HTTPS with Spring Security
+
+Spring Security's WebFlux support makes it easy to https://docs.spring.io/spring-security/site/docs/5.5.x/reference/html5/#webflux-http-redirect[redirect to HTTPS]. However, if you redirect _all_ HTTPS requests, the Kubernetes health checks will fail because they receive a 302 instead of a 200.
+
+. Crack open `SecurityConfiguration.java` in the gateway project and add the following code to the `springSecurityFilterChain()` method.
++
+[source,java]
+.src/main/java/.../gateway/config/SecurityConfiguration.java
+----
+http.redirectToHttps(redirect -> redirect
+    .httpsRedirectWhen(e -> e.getRequest().getHeaders().containsKey("X-Forwarded-Proto"))
+);
+----
+
+. Rebuild the Docker image for the gateway project.
+
+  ./gradlew bootJar -Pprod jib -Djib.to.image=gcr.io/<your-project-id>/gateway
+
+. Start a rolling restart of gateway instances:
+
+  kubectl rollout restart deployment gateway -n demo
+
+. Now you should get a 302 when you access your domain using https://httpie.io/[HTTPie]`.
+
+  http $DOMAIN
+
+. Update your Okta OIDC app to have `\https://${DOMAIN}/login/oauth2/code/oidc` as a valid redirect URI. Add `\https://${DOMAIN}.nip.io` to the sign-out redirect URIs too.
+
+== Encrypt Kubernetes Secrets
+
+Congratulations! Now you have everything running on GKE, using HTTPS! However, you have a lot of plain-text secrets in your K8s YAML files.
+
+"But, wait!" you might say. Doesn't https://kubernetes.io/docs/concepts/configuration/secret/[Kubernetes Secrets] solve everything?
+
+In my opinion, no. They're just unencrypted base64-encoded strings stored in YAML files. You might want to check in the `k8s` directory you just created.
+
+Having secrets in your source code is a bad idea!
+
+=== The Current State of Secret Management in Kubernetes
+
+I recently noticed a tweet from https://twitter.com/daniel_bilar/status/1379845799086022661[Daniel Jacob Bilar] that links to a talk from FOSDEM 2021 on the https://fosdem.org/2021/schedule/event/kubernetes_secret_management/[current state of secret management within Kubernetes]. It's an excellent overview of the various options.
+
+=== Store Secrets in Git with Sealed Secrets and Kubeseal
+
+https://bitnami.com/[Bitnami] has a https://github.com/bitnami-labs/sealed-secrets[Sealed Secrets] Apache-licensed open source project. Its README explains how it works.
+
+> **Problem**: "I can manage all my K8s config in git, except Secrets."
+>
+> **Solution**: Encrypt your Secret into a SealedSecret, which is safe to store - even to a public repository. The SealedSecret can be decrypted only by the controller running in the target cluster, and nobody else (not even the original author) is able to obtain the original Secret from the SealedSecret.
+
+. First, you'll need to install the Sealed Secrets CRD (Custom Resource Definition).
+
+  kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.16.0/controller.yaml
+
+. Retrieve the certificate keypair that this controller generates.
+
+  kubectl get secret -n kube-system -l sealedsecrets.bitnami.com/sealed-secrets-key -o yaml
+
+. Copy the raw value of `tls.crt` and decode it.
+
+  echo -n <paste-value-here> | base64 --decode
+
+. Put the raw value in a `tls.crt` file.
+
+. Next, install Kubeseal. On macOS, you can use Homebrew. For other platforms, see https://github.com/bitnami-labs/sealed-secrets/releases/tag/v0.16.0[the release notes].
+
+  brew install kubeseal
+
+The major item you need to encrypt in this example is the `ENCRYPT_KEY` you used to encrypt the OIDC client secret.
+
+. Run the following command to do this, where the value comes from your `k8s/registry-k8s/jhipster-registry.yml` file.
++
+[source,shell]
+----
+kubectl create secret generic encrypt-key \
+  --from-literal=ENCRYPT_KEY='your-value-here' \
+  --dry-run=client -o yaml > secrets.yml
+----
+
+. Next, use `kubeseal` to convert the secrets to encrypted secrets.
+
+  kubeseal --cert tls.crt --format=yaml -n demo < secrets.yml > sealed-secrets.yml
+
+. Remove the original secrets file and deploy your sealed secrets.
+
+  rm secrets.yml
+  kubectl apply -n demo -f sealed-secrets.yml && kubectl get -n demo sealedsecret encrypt-key
+
+=== Configure JHipster Registry to use the Sealed Secret
+
+. In `k8s/registry-k8s/jhipster-registry.yml`, change the `ENCRYPT_KEY` to use your new secret.
++
+[source,yaml]
+----
+- name: ENCRYPT_KEY
+  valueFrom:
+    secretKeyRef:
+      name: encrypt-key
+      key: ENCRYPT_KEY
+----
++
+TIP: You should be able to encrypt other secrets, like your database passwords, using a similar technique.
+
+. Redeploy JHipster Registry and restart all your deployments.
+
+  ./kubectl-apply.sh -f
+  kubectl rollout restart deployment -n demo
+
+. You can use port-forwarding to see the JHipster Registry locally.
+
+  kubectl port-forward svc/jhipster-registry -n demo 8761
+
+=== Use Spring Vault for External Secrets
+
+Using an external key management solution like https://www.hashicorp.com/products/vault[HashiCorp Vault] is also recommended. The JHipster Registry will have https://github.com/jhipster/jhipster-registry/pull/498[Vault support in its next release].
+
+In the meantime, I recommend reading link:/blog/2020/05/04/spring-vault[Secure Secrets With Spring Cloud Config and Vault].
+
+== Scale Your Reactive Java Microservices
+
+You can scale your instances using the `kubectl scale` command.
+
+[source,shell]
+----
+kubectl scale deployments/store --replicas=2 -n demo
+----
+
+Scaling will work just fine for the microservice apps because they're set up as OAuth 2.0 resource servers and are therefore stateless.
+
+However, the gateway uses Spring Security's OIDC login feature and stores the access tokens in the session. So if you scale it, sessions won't be shared. Single sign-on should still work; you'll just have to do the OAuth dance to get tokens if you hit a different instance.
+
+To synchronize sessions, you can use link:/blog/2020/12/14/spring-session-redis[Spring Session and Redis] with JHipster.
+
+[CAUTION]
+====
+If you leave everything running on Google Cloud, you will be charged for usage. Therefore, I recommend removing your cluster or deleting your namespace (`kubectl delete ns demo`) to reduce your cost.
+
+----
+gcloud container clusters delete <cluster-name> --zone=us-central1-a
+----
+====
+
+== Monitor Your Kubernetes Cluster with K9s
+
+Using `kubectl` to monitor your Kubernetes cluster can get tiresome. That's where https://github.com/derailed/k9s[K9s] can be helpful. It provides a terminal UI to interact with your Kubernetes clusters. K9s was created by my good friend https://twitter.com/kitesurfer[Fernand Galiana]. He's also created a commercial version called https://k9salpha.io/[K9sAlpha].
+
+To install it on macOS, run `brew install k9s`. Then run `k9s -n demo` to start it. You can navigate to your pods, select them with kbd:[Return], and navigate back up with kbd:[Esc].
+
+== Learn More About Kubernetes, Spring Boot, and JHipster
+
+⎈ Find the code on GitHub: https://github.com/oktadeveloper/java-microservices-examples/tree/main/jhipster-k8s[@oktadev/java-microservices-examples/jhipster-k8s].
+
+👀 Read the blog post: https://developer.okta.com/blog/2021/06/01/kubernetes-spring-boot-jhipster[Kubernetes to the Cloud with Spring Boot and JHipster].
