@@ -112,7 +112,7 @@ _Whhaaattt??? Plain-text secrets in YAML files?! WTF??_ I'll come back to this i
 
   ./kubectl-apply.sh -f
 
-. You can see if everything starts up successfully using `kubectl get pods -n demo`. Or, even better, use https://k9scli.io/[K9s].
+. You can see if everything starts up successfully using `kubectl get pods -n demo`. Or, even better, use https://k9scli.io/[K9s] (`k9s -n demo`).
 
 . Port-forward the registry and gateway to see them in a browser.
 
