@@ -349,7 +349,7 @@ kubectl get ingress gateway -n demo
 +
 [source,shell]
 ----
-EXTERNAL_IP=$(kubectl get ingress gateway -n demo -ojsonpath="{.status.loadBalancer.ingress[0].ip}")
+EXTERNAL_IP=$(kubectl get ingress gateway -ojsonpath="{.status.loadBalancer.ingress[0].ip}" -n demo)
 DOMAIN="${EXTERNAL_IP}.nip.io"
 
 # Prove it works
