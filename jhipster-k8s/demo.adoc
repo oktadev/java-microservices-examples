@@ -172,7 +172,7 @@ You can quit by typing `/exit`.
   ./kubectl-apply.sh -f
   kubectl rollout restart deploy -n demo
 
-. Verify everything still works at `\http://localhost:8080`.
+. Verify everything still works at `http://localhost:8080`.
 
 TIP: If you don't want to restart the Spring Cloud Config server when you update its configuration, see link:/blog/2020/12/07/spring-cloud-config#refresh-the-configuration-in-your-spring-cloud-config-server[Refresh the Configuration in Your Spring Cloud Config Server].
 
@@ -231,6 +231,9 @@ TIP: The cool kids use `kubectx` and `kubens` to set the default context and nam
 
 . Open a https://console.cloud.google.com/[console] in your browser or download and install the https://cloud.google.com/sdk/[`gcloud` CLI] if you want to run things locally.
 
+  glcoud auth login
+  gcloud config set project <project-id>
+
 . Enable the Google Kubernetes Engine API and Container Registry:
 
   gcloud services enable container.googleapis.com containerregistry.googleapis.com
@@ -261,11 +264,19 @@ containers:
 ----
 
 . In the `k8s` directory, apply all the deployment descriptors to run all your images.
-
++
 [source,shell]
 ----
 ./kubectl-apply.sh -f
 ----
++
+[TIP]
+====
+If you get an error that `localhost:8080 was refused`, run the following command:
+----
+gcloud container clusters get-credentials <cluster-name> --zone us-central1-a
+----
+====
 
 === Access Your Gateway on Google Cloud
 
@@ -279,7 +290,7 @@ containers:
 
 . Use the following command to set your gateway's IP address as a variable you can curl.
 
-  EXTERNAL_IP=$(kubectl get svc gateway -n demo -ojsonpath="{.status.loadBalancer.ingress[0].ip}")
+  EXTERNAL_IP=$(kubectl get svc gateway -ojsonpath="{.status.loadBalancer.ingress[0].ip}" -n demo)
   curl $EXTERNAL_IP:8080
 
 . Run `open \http://$EXTERNAL_IP:8080`, and you should be able to sign in.
@@ -313,7 +324,7 @@ spec:
   - http:
       paths:
       - path: /*
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: gateway
@@ -338,7 +349,7 @@ kubectl get ingress gateway -n demo
 +
 [source,shell]
 ----
-EXTERNAL_IP=$(kubectl get ingress gateway -ojsonpath="{.status.loadBalancer.ingress[0].ip}")
+EXTERNAL_IP=$(kubectl get ingress gateway -ojsonpath="{.status.loadBalancer.ingress[0].ip}" -n demo)
 DOMAIN="${EXTERNAL_IP}.nip.io"
 
 # Prove it works
@@ -379,7 +390,7 @@ metadata:
 
 . Check your certificate's status until it prints `Status: ACTIVE`:
 
-  kubectl describe managedcertificate gateway-certificate -n demo
+  kubectl describe managedcertificate gateway-certificate -n demo | grep Status
 
 === Force HTTPS with Spring Security
 
@@ -403,11 +414,11 @@ http.redirectToHttps(redirect -> redirect
 
   kubectl rollout restart deployment gateway -n demo
 
-. Now you should get a 302 when you access your domain using https://httpie.io/[HTTPie]`.
+. Now you should get a 302 when you access your domain using https://httpie.io/[HTTPie].
 
   http $DOMAIN
 
-. Update your Okta OIDC app to have `\https://${DOMAIN}/login/oauth2/code/oidc` as a valid redirect URI. Add `\https://${DOMAIN}.nip.io` to the sign-out redirect URIs too.
+. Update your Okta OIDC app to have `\https://${DOMAIN}/login/oauth2/code/oidc` as a valid redirect URI. Add `\https://${DOMAIN}` to the sign-out redirect URIs too.
 
 == Encrypt Kubernetes Secrets
 
