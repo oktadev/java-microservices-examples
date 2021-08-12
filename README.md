@@ -34,7 +34,7 @@ We think you'll enjoy them all!
 To install this example, run the following commands:
 
 ```bash
-git clone https://github.com/oktadeveloper/java-microservices-examples.git
+git clone https://github.com/oktadev/java-microservices-examples.git
 cd java-microservices-examples/spring-boot+cloud
 ```
 
@@ -65,7 +65,7 @@ Then, navigate to `http://localhost:8080/cool-cars` in your browser, log in with
 To install this example, run the following commands:
 
 ```bash
-git clone https://github.com/oktadeveloper/java-microservices-examples.git
+git clone https://github.com/oktadev/java-microservices-examples.git
 cd java-microservices-examples/jhipster
 ```
 
@@ -135,7 +135,7 @@ Now when you hit `http://localhost:8761` or `http://localhost:8080`, you should 
 To install this example, run the following commands:
 
 ```bash
-git clone https://github.com/oktadeveloper/java-microservices-examples.git
+git clone https://github.com/oktadev/java-microservices-examples.git
 cd java-microservices-examples/spring-cloud-gateway
 ```
 
@@ -172,7 +172,7 @@ okta.oauth2.client-secret=$clientSecret
 To install this example, run the following commands:
 
 ```bash
-git clone https://github.com/oktadeveloper/java-microservices-examples.git
+git clone https://github.com/oktadev/java-microservices-examples.git
 cd java-microservices-examples/reactive-jhipster
 ```
 
@@ -242,7 +242,7 @@ Now, open a new incognito browser window, go to `http://localhost:8080`, and sig
 To install this example, run the following commands:
 
 ```bash
-git clone https://github.com/oktadeveloper/java-microservices-examples.git
+git clone https://github.com/oktadev/java-microservices-examples.git
 cd java-microservices-examples/jhipster-k8s/k8s
 ```
 

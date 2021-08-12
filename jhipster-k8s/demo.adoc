@@ -22,7 +22,7 @@ In this demo, I'll generate K8s deployment descriptors, use Spring Cloud Config 
 
 . Start by cloning the JHipster 7 { Vue, Spring Boot, WebFlux } reactive microservices project from GitHub:
 
-  git clone https://github.com/oktadeveloper/java-microservices-examples.git
+  git clone https://github.com/oktadev/java-microservices-examples.git
   cd java-microservices-examples/reactive-jhipster
 
 . Install JHipster.
@@ -542,6 +542,6 @@ To install it on macOS, run `brew install k9s`. Then run `k9s -n demo` to start 
 
 == Learn More About Kubernetes, Spring Boot, and JHipster
 
-⎈ Find the code on GitHub: https://github.com/oktadeveloper/java-microservices-examples/tree/main/jhipster-k8s[@oktadev/java-microservices-examples/jhipster-k8s].
+⎈ Find the code on GitHub: https://github.com/oktadev/java-microservices-examples/tree/main/jhipster-k8s[@oktadev/java-microservices-examples/jhipster-k8s].
 
 👀 Read the blog post: https://developer.okta.com/blog/2021/06/01/kubernetes-spring-boot-jhipster[Kubernetes to the Cloud with Spring Boot and JHipster].

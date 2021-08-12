@@ -14,7 +14,7 @@ This example uses JHipster 7 to generate Kubernetes deployment descriptors and d
 To install this example, run the following commands:
 
 ```bash
-git clone https://github.com/oktadeveloper/java-microservices-examples.git
+git clone https://github.com/oktadev/java-microservices-examples.git
 cd java-microservices-examples/jhipster-k8s/k8s
 ```
 

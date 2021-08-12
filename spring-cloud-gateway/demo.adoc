@@ -122,6 +122,6 @@ Spring Cloud Gateway only supports Hystrix at this time. Spring Cloud deprecated
 
 == Learn More!
 
-. GitHub repo: https://github.com/oktadeveloper/java-microservices-examples
+. GitHub repo: https://github.com/oktadev/java-microservices-examples
 
 . Blog post: https://developer.okta.com/blog/2019/08/28/reactive-microservices-spring-cloud-gateway

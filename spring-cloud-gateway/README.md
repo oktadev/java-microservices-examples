@@ -15,7 +15,7 @@ This example is built with Spring Cloud Gateway and Spring WebFlux to show react
 To install this example, run the following commands:
 
 ```bash
-git clone https://github.com/oktadeveloper/java-microservices-examples.git
+git clone https://github.com/oktadev/java-microservices-examples.git
 cd java-microservices-examples/spring-cloud-gateway
 ```
 

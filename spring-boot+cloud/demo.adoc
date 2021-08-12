@@ -147,6 +147,6 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
 
 == Learn More!
 
-. GitHub repo: https://github.com/oktadeveloper/java-microservices-examples
+. GitHub repo: https://github.com/oktadev/java-microservices-examples
 
 . Blog post: https://developer.okta.com/blog/2019/05/22/java-microservices-spring-boot-spring-cloud

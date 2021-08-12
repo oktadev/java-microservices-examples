@@ -360,7 +360,7 @@ What about https://wiki.openjdk.java.net/display/loom/Main[Project Loom]? Will i
 
 == Stay Hip with JHipster!
 
-⛑ Find the code on GitHub: https://github.com/oktadeveloper/java-microservices-examples/tree/main/reactive-jhipster[@oktadeveloper/java-microservices-examples/reactive-jhipster].
+⛑ Find the code on GitHub: https://github.com/oktadev/java-microservices-examples/tree/main/reactive-jhipster[@oktadeveloper/java-microservices-examples/reactive-jhipster].
 
 👀 Read the blog post: https://developer.okta.com/blog/2021/01/20/reactive-java-microservices[Reactive Java Microservices with Spring Boot and JHipster].
 
