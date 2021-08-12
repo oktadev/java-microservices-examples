@@ -54,7 +54,7 @@ In this demo, I'll generate K8s deployment descriptors, use Spring Cloud Config 
 
 NOTE: If you don't want to publish your images on https://hub.docker.com/[Docker Hub], leave the Docker repository name blank.
 
-I already showed you how to get everything working with Docker Compose link:/blog/2021/01/20/reactive-java-microservices#run-your-microservices-stack-with-docker-compose[in the previous tutorial]. So today, let's run things locally with Minikube.
+I already showed you how to get everything working with Docker Compose https://developer.okta.com/blog/2021/01/20/reactive-java-microservices#run-your-microservices-stack-with-docker-compose[in the previous tutorial]. So today, let's run things locally with Minikube.
 
 == Install Minikube to Run Kubernetes Locally
 
@@ -174,7 +174,7 @@ You can quit by typing `/exit`.
 
 . Verify everything still works at `http://localhost:8080`.
 
-TIP: If you don't want to restart the Spring Cloud Config server when you update its configuration, see link:/blog/2020/12/07/spring-cloud-config#refresh-the-configuration-in-your-spring-cloud-config-server[Refresh the Configuration in Your Spring Cloud Config Server].
+TIP: If you don't want to restart the Spring Cloud Config server when you update its configuration, see https://developer.okta.com/blog/2020/12/07/spring-cloud-config#refresh-the-configuration-in-your-spring-cloud-config-server[Refresh the Configuration in Your Spring Cloud Config Server].
 
 === Change Spring Cloud Config to use Git
 
@@ -508,7 +508,7 @@ TIP: You should be able to encrypt other secrets, like your database passwords, 
 
 Using an external key management solution like https://www.hashicorp.com/products/vault[HashiCorp Vault] is also recommended. The JHipster Registry will have https://github.com/jhipster/jhipster-registry/pull/498[Vault support in its next release].
 
-In the meantime, I recommend reading link:/blog/2020/05/04/spring-vault[Secure Secrets With Spring Cloud Config and Vault].
+In the meantime, I recommend reading https://developer.okta.com/blog/2020/05/04/spring-vault[Secure Secrets With Spring Cloud Config and Vault].
 
 == Scale Your Reactive Java Microservices
 
@@ -523,7 +523,7 @@ Scaling will work just fine for the microservice apps because they're set up as 
 
 However, the gateway uses Spring Security's OIDC login feature and stores the access tokens in the session. So if you scale it, sessions won't be shared. Single sign-on should still work; you'll just have to do the OAuth dance to get tokens if you hit a different instance.
 
-To synchronize sessions, you can use link:/blog/2020/12/14/spring-session-redis[Spring Session and Redis] with JHipster.
+To synchronize sessions, you can use https://developer.okta.com/blog/2020/12/14/spring-session-redis[Spring Session and Redis] with JHipster.
 
 [CAUTION]
 ====
