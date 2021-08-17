@@ -24,10 +24,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
+import org.springframework.context.annotation.Configuration;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Import(SecurityProblemSupport.class)
+@Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
