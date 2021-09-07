@@ -161,7 +161,6 @@ As part of this process, several Docker Compose files are generated for you. The
 ----
 cd gateway
 docker-compose -f src/main/docker/keycloak.yml up -d #jhkeycloakup
-docker-compose -f src/main/docker/postgresql.yml up -d #jhpostgresqlup
 docker-compose -f src/main/docker/jhipster-registry.yml up -d #jhregistryup
 ./gradlew
 ----
