@@ -292,7 +292,7 @@ Once your Docker containers are finished building, you'll want to add your Okta 
 
 . Open `docker-compose/docker-compose.yml` in your favorite IDE and remove the Keycloak image at the bottom. You can leave it if you like, but it won't be used in this example.
 
-. Update `docker-compose/central-server-config/application.yml` to contain your OIDC settings that you want to share with all your microservices.
+. Update `docker-compose/central-server-config/application.yml` to contain your OIDC settings that you want to share with all your microservices. [`jh-oidc`]
 +
 [source,yaml]
 ----
