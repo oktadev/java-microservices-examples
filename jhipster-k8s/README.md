@@ -1,6 +1,6 @@
 # Kubernetes + Reactive Java with JHipster Example
  
-This example uses JHipster 7 to generate Kubernetes deployment descriptors and deploy your microservice architecture to Minikue and Google Cloud (GKE). See [Kubernetes to the Cloud with Spring Boot and JHipster][blog] to see how it was built.
+This example uses JHipster 7 to generate Kubernetes deployment descriptors and deploy your microservice architecture to Minikube and Google Cloud (GKE). See [Kubernetes to the Cloud with Spring Boot and JHipster][blog] to see how it was built.
 
 **Prerequisites:** [Java 11](https://sdkman.io/sdks#java) and [Docker](https://docs.docker.com/engine/install/).
 
